@@ -120,6 +120,41 @@ async function handleTrackDownload(request, env) {
     }
 }
 
+async function handleTrackSearch(request, env) {
+    if (request.method !== 'POST') {
+        return Response.json({ error: 'Method not allowed' }, { status: 405 });
+    }
+
+    try {
+        const body = await request.json();
+        const query = (body.query || '').trim().toLowerCase().substring(0, 100);
+
+        if (!query) {
+            return Response.json({ error: 'Missing query' }, { status: 400 });
+        }
+
+        // Toplam arama sayısını artır
+        const totalSearches = parseInt(await env.STATS.get('search_count') || '0', 10);
+        await env.STATS.put('search_count', String(totalSearches + 1));
+
+        // Bu terimin sayısını artır
+        const termKey = `search_term:${query}`;
+        const termCount = parseInt(await env.STATS.get(termKey) || '0', 10);
+        await env.STATS.put(termKey, String(termCount + 1));
+
+        // Son aranan terimleri listede tut (son 50)
+        const recentRaw = await env.STATS.get('recent_searches') || '[]';
+        const recent = JSON.parse(recentRaw);
+        recent.unshift({ query, time: Date.now() });
+        if (recent.length > 50) recent.length = 50;
+        await env.STATS.put('recent_searches', JSON.stringify(recent));
+
+        return Response.json({ success: true });
+    } catch (err) {
+        return Response.json({ error: 'Failed to track search' }, { status: 500 });
+    }
+}
+
 async function handleStats(request, env) {
     const url = new URL(request.url);
     const key = url.searchParams.get('key');
@@ -129,8 +164,16 @@ async function handleStats(request, env) {
     }
 
     try {
-        const count = parseInt(await env.STATS.get('download_count') || '0', 10);
-        return Response.json({ download_count: count });
+        const downloadCount = parseInt(await env.STATS.get('download_count') || '0', 10);
+        const searchCount = parseInt(await env.STATS.get('search_count') || '0', 10);
+        const recentRaw = await env.STATS.get('recent_searches') || '[]';
+        const recent = JSON.parse(recentRaw);
+
+        return Response.json({
+            download_count: downloadCount,
+            search_count: searchCount,
+            recent_searches: recent
+        });
     } catch (err) {
         return Response.json({ error: 'Failed to get stats' }, { status: 500 });
     }
@@ -148,6 +191,9 @@ export default {
         }
         if (url.pathname === '/api/track-download') {
             return handleTrackDownload(request, env);
+        }
+        if (url.pathname === '/api/track-search') {
+            return handleTrackSearch(request, env);
         }
         if (url.pathname === '/api/stats') {
             return handleStats(request, env);
