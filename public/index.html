@@ -304,17 +304,8 @@
 
         // Open result links in new tab
         document.querySelectorAll('.gsc-webResult.gsc-result a[data-ctorig]').forEach(function(link) {
-            if (link.dataset.newtab) return;
-            link.dataset.newtab = 'true';
             link.setAttribute('target', '_blank');
             link.setAttribute('rel', 'noopener noreferrer');
-            link.addEventListener('click', function(e) {
-                // Don't interfere with download button clicks
-                if (e.target.closest('.reel-download-btn')) return;
-                e.preventDefault();
-                e.stopPropagation();
-                window.open(link.getAttribute('data-ctorig') || link.href, '_blank');
-            }, true);
         });
 
         // Add download buttons to search results
