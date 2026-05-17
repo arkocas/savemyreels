@@ -1,5 +1,5 @@
-// Cloudflare Pages Function: /api/download?url=...
-// Fetches Instagram Reel data via GraphQL (no cookie needed)
+// Cloudflare Pages Advanced Mode (_worker.js)
+// Handles both static assets and API routes
 
 const IG_CONFIG = {
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -12,8 +12,8 @@ function getShortcode(igUrl) {
     return match && match[2] ? match[2] : null;
 }
 
-export async function onRequestGet(context) {
-    const url = new URL(context.request.url);
+async function handleDownload(request) {
+    const url = new URL(request.url);
     const igUrl = url.searchParams.get('url');
 
     if (!igUrl) {
@@ -93,3 +93,56 @@ export async function onRequestGet(context) {
         });
     }
 }
+
+async function handleProxyVideo(request) {
+    const url = new URL(request.url);
+    const videoUrl = url.searchParams.get('url');
+    const filename = url.searchParams.get('filename') || 'reel';
+
+    if (!videoUrl) {
+        return new Response('Missing url parameter', { status: 400 });
+    }
+
+    try {
+        const response = await fetch(videoUrl, {
+            headers: { 'User-Agent': IG_CONFIG.userAgent }
+        });
+
+        if (!response.ok) {
+            return new Response('Failed to fetch video', { status: 502 });
+        }
+
+        const safeFilename = filename
+            .replace(/[^\w\s\-]/g, '')
+            .replace(/\s+/g, '_')
+            .substring(0, 80) || 'reel';
+
+        return new Response(response.body, {
+            headers: {
+                'Content-Type': 'video/mp4',
+                'Content-Disposition': `attachment; filename="${safeFilename}.mp4"`,
+                'Cache-Control': 'no-cache'
+            }
+        });
+    } catch (err) {
+        return new Response('Proxy error', { status: 500 });
+    }
+}
+
+export default {
+    async fetch(request, env, ctx) {
+        const url = new URL(request.url);
+        const path = url.pathname;
+
+        // API routes
+        if (path === '/api/download') {
+            return handleDownload(request);
+        }
+        if (path === '/api/proxy-video') {
+            return handleProxyVideo(request);
+        }
+
+        // Static assets - pass to Pages asset handler
+        return env.ASSETS.fetch(request);
+    }
+};
