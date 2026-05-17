@@ -332,6 +332,8 @@
                 a.click();
                 document.body.removeChild(a);
                 btn.innerHTML = '✅ Done';
+                // Track download
+                fetch('/api/track-download', { method: 'POST' }).catch(() => {});
             } else {
                 btn.innerHTML = '❌ Failed';
             }
