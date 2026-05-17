@@ -237,23 +237,6 @@
 
     <!-- Google Programmable Search Engine Script -->
     <script async src="https://cse.google.com/cse.js?cx=511550904bb1e4628"></script>
-    <script>
-    // Track searches when Google CSE performs a search
-    window.__gcse = window.__gcse || {};
-    window.__gcse.searchCallbacks = {
-        web: {
-            starting: function(gname, query) {
-                if (query) {
-                    fetch('/api/track-search', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ query: query })
-                    }).catch(() => {});
-                }
-            }
-        }
-    };
-    </script>
     
     <script src="i18n.js"></script>
     <script src="download.js"></script>
@@ -295,6 +278,20 @@
             const searchSection = document.querySelector('.search-section');
             if (searchSection && !searchSection.contains(overlay)) {
                 searchSection.appendChild(overlay);
+            }
+        }
+
+        // Track search queries
+        const searchInput = document.querySelector('input.gsc-input');
+        if (searchInput && searchInput.value && !searchInput.dataset.tracked) {
+            const query = searchInput.value.trim();
+            if (query && document.querySelector('.gsc-webResult')) {
+                searchInput.dataset.tracked = query;
+                fetch('/api/track-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                }).catch(() => {});
             }
         }
 
