@@ -304,6 +304,7 @@
 
         // Open result links in new tab
         document.querySelectorAll('.gsc-webResult.gsc-result a[data-ctorig]').forEach(function(link) {
+            if (link.getAttribute('target') === '_blank') return;
             link.setAttribute('target', '_blank');
             link.setAttribute('rel', 'noopener noreferrer');
         });
