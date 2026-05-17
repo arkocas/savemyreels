@@ -120,7 +120,14 @@ async function handleTrackDownload(request, env) {
     }
 }
 
-async function handleStats(env) {
+async function handleStats(request, env) {
+    const url = new URL(request.url);
+    const key = url.searchParams.get('key');
+
+    if (key !== env.STATS_SECRET) {
+        return Response.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
     try {
         const count = parseInt(await env.STATS.get('download_count') || '0', 10);
         return Response.json({ download_count: count });
@@ -143,7 +150,7 @@ export default {
             return handleTrackDownload(request, env);
         }
         if (url.pathname === '/api/stats') {
-            return handleStats(env);
+            return handleStats(request, env);
         }
 
         // Let assets handle everything else
