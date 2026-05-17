@@ -186,14 +186,21 @@ body {
     border: 1px solid var(--border) !important;
     border-radius: var(--radius-sm) !important;
     padding: 1rem !important;
+    padding-bottom: 3rem !important;
     margin-bottom: 0.75rem !important;
     background: var(--surface) !important;
     transition: all var(--transition);
+    position: relative;
 }
 
 .gsc-webResult.gsc-result:hover {
     border-color: var(--primary) !important;
     box-shadow: var(--shadow-lg) !important;
+}
+
+.gsc-table-result,
+.gsc-table-result td {
+    padding: 0 !important;
 }
 
 .gs-title {
@@ -309,13 +316,13 @@ body {
 /* Download button on search results */
 .reel-download-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: linear-gradient(135deg, #e11d48, #be123c);
+    bottom: 0.75rem;
+    right: 0.75rem;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 20px;
+    padding: 8px 14px;
+    border-radius: 50px;
     font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
@@ -324,18 +331,22 @@ body {
     gap: 4px;
     transition: all 0.2s ease;
     z-index: 10;
-    box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    white-space: nowrap;
 }
 
 .reel-download-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
 }
 
 .reel-download-btn:disabled {
     opacity: 0.7;
     cursor: wait;
     transform: none;
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    box-shadow: none;
 }
 
 /* Download Section */
@@ -544,6 +555,26 @@ footer {
 
     .gsc-search-button-v2 {
         border-radius: var(--radius-sm) !important;
+    }
+
+    .gsc-webResult.gsc-result {
+        padding: 1rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    .reel-download-btn {
+        bottom: 0.5rem;
+        right: 0.5rem;
+        padding: 7px 12px;
+        font-size: 0.7rem;
+    }
+
+    .reel-download-btn:hover {
+        transform: none;
+    }
+
+    .reel-download-btn:disabled {
+        transform: none;
     }
 }
 
