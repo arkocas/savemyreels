@@ -241,6 +241,13 @@
     <script src="i18n.js"></script>
     <script src="download.js"></script>
     <script>
+    // Helper to get translation for current language
+    function getTranslation(key) {
+        if (typeof translations === 'undefined' || typeof detectLanguage === 'undefined') return null;
+        const lang = detectLanguage();
+        return translations[lang] && translations[lang][key] ? translations[lang][key] : (translations['en'] && translations['en'][key]) || null;
+    }
+
     // Remove Google branding from autocomplete
     const observer = new MutationObserver(function(mutations) {
         // Remove branding
@@ -305,8 +312,8 @@
 
             const btn = document.createElement('button');
             btn.className = 'reel-download-btn';
-            btn.innerHTML = '⬇ Download';
-            btn.title = 'Download this Reel as MP4';
+            btn.innerHTML = '⬇ ' + (getTranslation('download_btn') || 'Download');
+            btn.title = getTranslation('download_reel_title') || 'Download this Reel as MP4';
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -320,7 +327,7 @@
 
     // Download reel from search result
     async function downloadReel(reelUrl, btn) {
-        btn.innerHTML = '⏳ Loading...';
+        btn.innerHTML = '⏳ ' + (getTranslation('download_btn_loading') || 'Loading...');
         btn.disabled = true;
         try {
             const response = await fetch('/api/download?url=' + encodeURIComponent(reelUrl));
@@ -345,17 +352,17 @@
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                btn.innerHTML = '✅ Done';
+                btn.innerHTML = '✅ ' + (getTranslation('download_btn_done') || 'Done');
                 // Track download
                 fetch('/api/track-download', { method: 'POST' }).catch(() => {});
             } else {
-                btn.innerHTML = '❌ Failed';
+                btn.innerHTML = '❌ ' + (getTranslation('download_btn_failed') || 'Failed');
             }
         } catch (err) {
-            btn.innerHTML = '❌ Failed';
+            btn.innerHTML = '❌ ' + (getTranslation('download_btn_failed') || 'Failed');
         }
         setTimeout(() => {
-            btn.innerHTML = '⬇ Download';
+            btn.innerHTML = '⬇ ' + (getTranslation('download_btn') || 'Download');
             btn.disabled = false;
         }, 3000);
     }

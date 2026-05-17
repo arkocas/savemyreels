@@ -3,6 +3,13 @@
  * Fetches video via local backend API proxy
  */
 
+// Helper to get translation (uses global translations from i18n.js)
+function getTranslation(key) {
+    if (typeof translations === 'undefined' || typeof detectLanguage === 'undefined') return null;
+    const lang = detectLanguage();
+    return translations[lang] && translations[lang][key] ? translations[lang][key] : (translations['en'] && translations['en'][key]) || null;
+}
+
 const reelUrlInput = document.getElementById('reel-url');
 const downloadBtn = document.getElementById('download-btn');
 const downloadResult = document.getElementById('download-result');
@@ -85,7 +92,7 @@ function showResult(data) {
             ${data.owner ? `<p class="download-owner">@${escapeHtml(data.owner.username)}</p>` : ''}
             ${data.caption ? `<p class="download-caption">${escapeHtml(data.caption.substring(0, 100))}${data.caption.length > 100 ? '...' : ''}</p>` : ''}
         </div>
-        <a href="${proxyUrl}" class="download-link" download="${escapeHtml(filename)}.mp4" onclick="trackDownload()">⬇️ Download Video</a>
+        <a href="${proxyUrl}" class="download-link" download="${escapeHtml(filename)}.mp4" onclick="trackDownload()">⬇️ ${getTranslation('download_video') || 'Download Video'}</a>
     `;
 }
 
