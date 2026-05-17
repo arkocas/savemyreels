@@ -106,6 +106,29 @@ async function handleProxyVideo(request) {
     }
 }
 
+async function handleTrackDownload(request, env) {
+    if (request.method !== 'POST') {
+        return Response.json({ error: 'Method not allowed' }, { status: 405 });
+    }
+
+    try {
+        const current = parseInt(await env.STATS.get('download_count') || '0', 10);
+        await env.STATS.put('download_count', String(current + 1));
+        return Response.json({ success: true, count: current + 1 });
+    } catch (err) {
+        return Response.json({ error: 'Failed to track' }, { status: 500 });
+    }
+}
+
+async function handleStats(env) {
+    try {
+        const count = parseInt(await env.STATS.get('download_count') || '0', 10);
+        return Response.json({ download_count: count });
+    } catch (err) {
+        return Response.json({ error: 'Failed to get stats' }, { status: 500 });
+    }
+}
+
 export default {
     async fetch(request, env) {
         const url = new URL(request.url);
@@ -115,6 +138,12 @@ export default {
         }
         if (url.pathname === '/api/proxy-video') {
             return handleProxyVideo(request);
+        }
+        if (url.pathname === '/api/track-download') {
+            return handleTrackDownload(request, env);
+        }
+        if (url.pathname === '/api/stats') {
+            return handleStats(env);
         }
 
         // Let assets handle everything else

@@ -85,7 +85,7 @@ function showResult(data) {
             ${data.owner ? `<p class="download-owner">@${escapeHtml(data.owner.username)}</p>` : ''}
             ${data.caption ? `<p class="download-caption">${escapeHtml(data.caption.substring(0, 100))}${data.caption.length > 100 ? '...' : ''}</p>` : ''}
         </div>
-        <a href="${proxyUrl}" class="download-link" download="${escapeHtml(filename)}.mp4">⬇️ Download Video</a>
+        <a href="${proxyUrl}" class="download-link" download="${escapeHtml(filename)}.mp4" onclick="trackDownload()">⬇️ Download Video</a>
     `;
 }
 
@@ -104,4 +104,8 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function trackDownload() {
+    fetch('/api/track-download', { method: 'POST' }).catch(() => {});
 }
