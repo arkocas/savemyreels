@@ -1,6 +1,3 @@
-// Cloudflare Pages Advanced Mode (_worker.js)
-// Handles both static assets and API routes
-
 const IG_CONFIG = {
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     xIgAppId: '936619743392459'
@@ -17,18 +14,12 @@ async function handleDownload(request) {
     const igUrl = url.searchParams.get('url');
 
     if (!igUrl) {
-        return new Response(JSON.stringify({ error: 'Missing url parameter' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return Response.json({ error: 'Missing url parameter' }, { status: 400 });
     }
 
     const shortcode = getShortcode(igUrl);
     if (!shortcode) {
-        return new Response(JSON.stringify({ error: 'Invalid Instagram URL' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return Response.json({ error: 'Invalid Instagram URL' }, { status: 400 });
     }
 
     try {
@@ -52,23 +43,17 @@ async function handleDownload(request) {
         });
 
         if (!response.ok) {
-            return new Response(JSON.stringify({ error: `Instagram returned ${response.status}` }), {
-                status: 502,
-                headers: { 'Content-Type': 'application/json' }
-            });
+            return Response.json({ error: `Instagram returned ${response.status}` }, { status: 502 });
         }
 
         const json = await response.json();
         const item = json?.data?.xdt_shortcode_media;
 
         if (!item) {
-            return new Response(JSON.stringify({ error: 'Could not fetch media data' }), {
-                status: 404,
-                headers: { 'Content-Type': 'application/json' }
-            });
+            return Response.json({ error: 'Could not fetch media data' }, { status: 404 });
         }
 
-        const data = {
+        return Response.json({
             shortcode: item.shortcode,
             is_video: item.is_video,
             video_url: item.video_url || null,
@@ -80,17 +65,9 @@ async function handleDownload(request) {
             },
             video_duration: item.video_duration,
             view_count: item.video_view_count || item.video_play_count,
-        };
-
-        return new Response(JSON.stringify(data), {
-            headers: { 'Content-Type': 'application/json' }
         });
-
     } catch (err) {
-        return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return Response.json({ error: 'Failed to fetch data' }, { status: 500 });
     }
 }
 
@@ -130,19 +107,17 @@ async function handleProxyVideo(request) {
 }
 
 export default {
-    async fetch(request, env, ctx) {
+    async fetch(request, env) {
         const url = new URL(request.url);
-        const path = url.pathname;
 
-        // API routes
-        if (path === '/api/download') {
+        if (url.pathname === '/api/download') {
             return handleDownload(request);
         }
-        if (path === '/api/proxy-video') {
+        if (url.pathname === '/api/proxy-video') {
             return handleProxyVideo(request);
         }
 
-        // Static assets - pass to Pages asset handler
+        // Let assets handle everything else
         return env.ASSETS.fetch(request);
     }
 };

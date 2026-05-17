@@ -1,0 +1,17 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: interest-cohort=()
+
+/styles.css
+  Cache-Control: public, max-age=604800
+
+/i18n.js
+  Cache-Control: public, max-age=604800
+
+/download.js
+  Cache-Control: public, max-age=604800
+
+/manifest.json
+  Cache-Control: public, max-age=604800
