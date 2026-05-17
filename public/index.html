@@ -309,6 +309,8 @@
             link.setAttribute('target', '_blank');
             link.setAttribute('rel', 'noopener noreferrer');
             link.addEventListener('click', function(e) {
+                // Don't interfere with download button clicks
+                if (e.target.closest('.reel-download-btn')) return;
                 e.preventDefault();
                 e.stopPropagation();
                 window.open(link.getAttribute('data-ctorig') || link.href, '_blank');
