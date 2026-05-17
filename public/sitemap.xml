@@ -15,4 +15,22 @@
         <xhtml:link rel="alternate" hreflang="ar" href="https://savemyreels.com/"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://savemyreels.com/"/>
     </url>
+    <url>
+        <loc>https://savemyreels.com/blog/instagram-reels-downloader.html</loc>
+        <lastmod>2026-05-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://savemyreels.com/blog/instagram-reels-indir.html</loc>
+        <lastmod>2026-05-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://savemyreels.com/blog/reels-finder.html</loc>
+        <lastmod>2026-05-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
 </urlset>
