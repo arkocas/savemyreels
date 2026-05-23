@@ -387,9 +387,11 @@ const translations = {
 
 // Detect user language from browser
 function detectLanguage() {
-    const browserLang = navigator.language || navigator.userLanguage || 'en';
-    const lang = browserLang.split('-')[0].toLowerCase();
-    return translations[lang] ? lang : 'en';
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    if (urlLang && translations[urlLang]) return urlLang;
+    
+    const browserLang = navigator.language?.split('-')[0].toLowerCase();
+    return translations[browserLang] ? browserLang : 'en';
 }
 
 // Apply translations to the page
