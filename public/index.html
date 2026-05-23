@@ -270,6 +270,18 @@
     <script src="i18n.js"></script>
     <script src="download.js"></script>
     <script>
+    // Remove GSC hash from URL
+    window.addEventListener('hashchange', function() {
+        if (window.location.hash.startsWith('#gsc')) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+    });
+    // Also clean on load
+    if (window.location.hash.startsWith('#gsc')) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    </script>
+    <script>
     // Helper to get translation for current language
     function getTranslation(key) {
         if (typeof translations === 'undefined' || typeof detectLanguage === 'undefined') return null;
