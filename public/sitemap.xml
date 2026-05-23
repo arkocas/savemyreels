@@ -7,12 +7,13 @@
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="en" href="https://savemyreels.com/"/>
-        <xhtml:link rel="alternate" hreflang="tr" href="https://savemyreels.com/"/>
-        <xhtml:link rel="alternate" hreflang="de" href="https://savemyreels.com/"/>
-        <xhtml:link rel="alternate" hreflang="es" href="https://savemyreels.com/"/>
-        <xhtml:link rel="alternate" hreflang="fr" href="https://savemyreels.com/"/>
-        <xhtml:link rel="alternate" hreflang="pt" href="https://savemyreels.com/"/>
-        <xhtml:link rel="alternate" hreflang="ar" href="https://savemyreels.com/"/>
+        <xhtml:link rel="alternate" hreflang="tr" href="https://savemyreels.com/?lang=tr"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://savemyreels.com/?lang=de"/>
+        <xhtml:link rel="alternate" hreflang="es" href="https://savemyreels.com/?lang=es"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://savemyreels.com/?lang=fr"/>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://savemyreels.com/?lang=pt"/>
+        <xhtml:link rel="alternate" hreflang="ar" href="https://savemyreels.com/?lang=ar"/>
+        <xhtml:link rel="alternate" hreflang="hi" href="https://savemyreels.com/?lang=hi"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://savemyreels.com/"/>
     </url>
     <url>
