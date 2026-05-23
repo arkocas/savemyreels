@@ -387,9 +387,19 @@ const translations = {
 
 // Detect user language from browser
 function detectLanguage() {
+    // First check URL parameter
     const urlLang = new URLSearchParams(window.location.search).get('lang');
-    if (urlLang && translations[urlLang]) return urlLang;
-    
+    if (urlLang && translations[urlLang]) {
+        // Save to localStorage for persistence
+        localStorage.setItem('preferredLang', urlLang);
+        return urlLang;
+    }
+
+    // Then check localStorage
+    const savedLang = localStorage.getItem('preferredLang');
+    if (savedLang && translations[savedLang]) return savedLang;
+
+    // Finally fall back to browser language
     const browserLang = navigator.language?.split('-')[0].toLowerCase();
     return translations[browserLang] ? browserLang : 'en';
 }
@@ -403,15 +413,17 @@ function applyTranslations() {
     document.documentElement.lang = lang;
 
     // Set text direction for RTL languages
-    if (lang === 'ar') {
-        document.documentElement.dir = 'rtl';
-    }
+    document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+    // Set dynamic title and meta description
+    document.title = t.hero_title + " – SaveMyReels";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute("content", t.seo_desc);
 
     // Apply translations to all elements with data-i18n attribute
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (t[key]) {
-            // Use innerHTML for elements that contain HTML (like <strong>)
             if (t[key].includes('<')) {
                 el.innerHTML = t[key];
             } else {
@@ -423,3 +435,7 @@ function applyTranslations() {
 
 // Run when DOM is ready
 document.addEventListener('DOMContentLoaded', applyTranslations);
+
+// Re-apply translations after a short delay to catch any dynamically loaded content
+setTimeout(applyTranslations, 500);
+setTimeout(applyTranslations, 1500);
