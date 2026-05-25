@@ -614,3 +614,9 @@ footer {
   max-width: 100% !important;
   width: 100% !important;
 }
+
+@media (max-width: 768px) {
+  .ad-leaderboard {
+    display: none; /* Mobilde bu reklamı gizle */
+  }
+}
