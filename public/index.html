@@ -328,17 +328,80 @@
             }
         }
 
-        // Track search queries — her yeni sorgu için tetikle
+        // Track search queries and intercept URLs
         const searchInput = document.querySelector('input.gsc-input');
-        if (searchInput && searchInput.value) {
-            const query = searchInput.value.trim();
-            if (query && document.querySelector('.gsc-webResult') && searchInput.dataset.lastTracked !== query) {
-                searchInput.dataset.lastTracked = query;
-                fetch('/api/track-search', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query })
-                }).catch(() => {});
+        if (searchInput) {
+            // Track queries
+            if (searchInput.value) {
+                const query = searchInput.value.trim();
+                if (query && document.querySelector('.gsc-webResult') && searchInput.dataset.lastTracked !== query) {
+                    searchInput.dataset.lastTracked = query;
+                    fetch('/api/track-search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query: query })
+                    }).catch(() => {});
+                }
+            }
+
+            // Intercept Instagram URLs
+            if (!searchInput.dataset.urlListener) {
+                searchInput.dataset.urlListener = 'true';
+                
+                const warningEl = document.createElement('div');
+                warningEl.className = 'search-url-warning hidden';
+                warningEl.style.color = '#e11d48';
+                warningEl.style.fontSize = '0.85rem';
+                warningEl.style.marginTop = '-0.5rem';
+                warningEl.style.marginBottom = '1rem';
+                warningEl.style.textAlign = 'center';
+                warningEl.style.fontWeight = '600';
+                
+                const getWarningText = () => {
+                    const lang = (typeof detectLanguage === 'function') ? detectLanguage() : 'en';
+                    const texts = {
+                        en: '👇 To download this Reel, paste the link in the download box below.',
+                        tr: '👇 Bu Reel\'i indirmek için linki aşağıdaki indirme kutusuna yapıştırın.',
+                        de: '👇 Fügen Sie den Link unten ein, um dieses Reel herunterzuladen.',
+                        es: '👇 Para descargar este Reel, pega el enlace abajo.',
+                        fr: '👇 Collez le lien ci-dessous pour télécharger ce Reel.',
+                        pt: '👇 Para baixar este Reel, cole o link abaixo.',
+                        ar: '👇 لتحميل هذا الـ Reel، الصق الرابط أدناه.',
+                        hi: '👇 इस Reel को डाउनलोड करने के लिए, नीचे लिंक पेस्ट करें।'
+                    };
+                    return texts[lang] || texts['en'];
+                };
+                
+                const form = searchInput.closest('form');
+                if (form) form.insertAdjacentElement('afterend', warningEl);
+                
+                searchInput.addEventListener('input', (e) => {
+                    if (e.target.value.includes('instagram.com/')) {
+                        warningEl.textContent = getWarningText();
+                        warningEl.classList.remove('hidden');
+                    } else {
+                        warningEl.classList.add('hidden');
+                    }
+                });
+                
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && searchInput.value.includes('instagram.com/')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const downInput = document.getElementById('reel-url');
+                        if (downInput) {
+                            downInput.value = searchInput.value;
+                            searchInput.value = '';
+                            warningEl.classList.add('hidden');
+                            document.querySelector('.download-section').scrollIntoView({ behavior: 'smooth' });
+                            
+                            // Flash the download box to draw attention
+                            downInput.style.transition = 'box-shadow 0.3s ease';
+                            downInput.style.boxShadow = '0 0 0 4px rgba(225, 29, 72, 0.4)';
+                            setTimeout(() => downInput.style.boxShadow = 'none', 1000);
+                        }
+                    }
+                }, true); // use capture
             }
         }
 
