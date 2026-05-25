@@ -41,7 +41,7 @@ async function handleDownload() {
         if (data.error) {
             showError(data.error);
         } else if (data.video_url) {
-            showResult(data);
+            showResult(data, url);
         } else {
             showError('This post does not contain a video.');
         }
@@ -65,7 +65,7 @@ function isValidInstagramUrl(url) {
     return /instagram\.com\/(reel|reels|p)\/[\w-]+/i.test(url);
 }
 
-function showResult(data) {
+function showResult(data, originalUrl) {
     hideAll();
     downloadResult.classList.remove('hidden');
     
@@ -83,7 +83,6 @@ function showResult(data) {
     if (!filename) filename = 'reel_' + data.shortcode;
 
     const proxyUrl = `/api/proxy-video?url=${encodeURIComponent(data.video_url)}`;
-    const originalUrl = reelUrlInput.value.trim();
 
     // Build DOM instead of innerHTML to avoid escaping issues
     downloadResult.innerHTML = `
@@ -96,7 +95,7 @@ function showResult(data) {
         </div>
     `;
 
-    // Create download link via DOM to safely pass the URL
+    // Create download link via DOM — originalUrl is passed directly, no encoding issues
     const downloadLink = document.createElement('a');
     downloadLink.href = proxyUrl;
     downloadLink.className = 'download-link';
