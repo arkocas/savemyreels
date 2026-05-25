@@ -83,7 +83,9 @@ function showResult(data) {
     if (!filename) filename = 'reel_' + data.shortcode;
 
     const proxyUrl = `/api/proxy-video?url=${encodeURIComponent(data.video_url)}`;
-    
+    const originalUrl = reelUrlInput.value.trim();
+
+    // Build DOM instead of innerHTML to avoid escaping issues
     downloadResult.innerHTML = `
         <div class="download-preview">
             <video src="${data.video_url}" controls playsinline poster="${data.thumbnail || ''}"></video>
@@ -92,8 +94,16 @@ function showResult(data) {
             ${data.owner ? `<p class="download-owner">@${escapeHtml(data.owner.username)}</p>` : ''}
             ${data.caption ? `<p class="download-caption">${escapeHtml(data.caption.substring(0, 100))}${data.caption.length > 100 ? '...' : ''}</p>` : ''}
         </div>
-        <a href="${proxyUrl}" class="download-link" download="${escapeHtml(filename)}.mp4" onclick="trackDownload('${escapeHtml(reelUrlInput.value.trim())}')">⬇️ ${getTranslation('download_video') || 'Download Video'}</a>
     `;
+
+    // Create download link via DOM to safely pass the URL
+    const downloadLink = document.createElement('a');
+    downloadLink.href = proxyUrl;
+    downloadLink.className = 'download-link';
+    downloadLink.download = filename + '.mp4';
+    downloadLink.textContent = '⬇️ ' + (getTranslation('download_video') || 'Download Video');
+    downloadLink.addEventListener('click', () => trackDownload(originalUrl));
+    downloadResult.appendChild(downloadLink);
 }
 
 function showError(msg) {
