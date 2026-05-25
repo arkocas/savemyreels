@@ -114,8 +114,38 @@ async function handleTrackDownload(request, env) {
     }
 
     try {
+        // Toplam indirme sayısını artır
         const current = parseInt(await env.STATS.get('download_count') || '0', 10);
         await env.STATS.put('download_count', String(current + 1));
+
+        // Body'den source ve query bilgisini al
+        let source = 'direct';
+        let query = '';
+        try {
+            const body = await request.json();
+            source = body.source || 'direct'; // 'direct' veya 'search'
+            query = (body.query || '').trim().toLowerCase().substring(0, 100);
+        } catch (_) {}
+
+        // Kaynağa göre sayaç tut
+        const sourceKey = `download_source:${source}`;
+        const sourceCount = parseInt(await env.STATS.get(sourceKey) || '0', 10);
+        await env.STATS.put(sourceKey, String(sourceCount + 1));
+
+        // Arama sonucundan indirildiyse hangi sorgudan geldiğini kaydet
+        if (source === 'search' && query) {
+            const queryDownloadKey = `download_from_search:${query}`;
+            const queryDownloadCount = parseInt(await env.STATS.get(queryDownloadKey) || '0', 10);
+            await env.STATS.put(queryDownloadKey, String(queryDownloadCount + 1));
+
+            // Son indirilen aramaları listede tut (son 50)
+            const recentRaw = await env.STATS.get('recent_search_downloads') || '[]';
+            const recent = JSON.parse(recentRaw);
+            recent.unshift({ query, time: Date.now() });
+            if (recent.length > 50) recent.length = 50;
+            await env.STATS.put('recent_search_downloads', JSON.stringify(recent));
+        }
+
         return Response.json({ success: true, count: current + 1 });
     } catch (err) {
         return Response.json({ error: 'Failed to track' }, { status: 500 });
@@ -168,13 +198,22 @@ async function handleStats(request, env) {
     try {
         const downloadCount = parseInt(await env.STATS.get('download_count') || '0', 10);
         const searchCount = parseInt(await env.STATS.get('search_count') || '0', 10);
+        const downloadDirect = parseInt(await env.STATS.get('download_source:direct') || '0', 10);
+        const downloadFromSearch = parseInt(await env.STATS.get('download_source:search') || '0', 10);
+
         const recentRaw = await env.STATS.get('recent_searches') || '[]';
         const recent = JSON.parse(recentRaw);
 
+        const recentDownloadsRaw = await env.STATS.get('recent_search_downloads') || '[]';
+        const recentSearchDownloads = JSON.parse(recentDownloadsRaw);
+
         return Response.json({
             download_count: downloadCount,
+            download_direct: downloadDirect,
+            download_from_search: downloadFromSearch,
             search_count: searchCount,
-            recent_searches: recent
+            recent_searches: recent,
+            recent_search_downloads: recentSearchDownloads
         });
     } catch (err) {
         return Response.json({ error: 'Failed to get stats' }, { status: 500 });

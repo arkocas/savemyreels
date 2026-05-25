@@ -329,12 +329,12 @@
             }
         }
 
-        // Track search queries
+        // Track search queries — her yeni sorgu için tetikle
         const searchInput = document.querySelector('input.gsc-input');
-        if (searchInput && searchInput.value && !searchInput.dataset.tracked) {
+        if (searchInput && searchInput.value) {
             const query = searchInput.value.trim();
-            if (query && document.querySelector('.gsc-webResult')) {
-                searchInput.dataset.tracked = query;
+            if (query && document.querySelector('.gsc-webResult') && searchInput.dataset.lastTracked !== query) {
+                searchInput.dataset.lastTracked = query;
                 fetch('/api/track-search', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -365,7 +365,10 @@
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                downloadReel(reelUrl, btn);
+                // Hangi sorgudan indirildiğini bul
+                const searchInput = document.querySelector('input.gsc-input');
+                const fromQuery = searchInput ? searchInput.value.trim() : '';
+                downloadReel(reelUrl, btn, fromQuery);
             });
             result.style.position = 'relative';
             result.appendChild(btn);
@@ -374,7 +377,7 @@
     observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 
     // Download reel from search result
-    async function downloadReel(reelUrl, btn) {
+    async function downloadReel(reelUrl, btn, fromQuery) {
         btn.innerHTML = '⏳ ' + (getTranslation('download_btn_loading') || 'Loading...');
         btn.disabled = true;
         try {
@@ -401,8 +404,12 @@
                 a.click();
                 document.body.removeChild(a);
                 btn.innerHTML = '✅ ' + (getTranslation('download_btn_done') || 'Done');
-                // Track download
-                fetch('/api/track-download', { method: 'POST' }).catch(() => {});
+                // Track download — kaynak: arama sonucu
+                fetch('/api/track-download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ source: 'search', query: fromQuery || '' })
+                }).catch(() => {});
             } else {
                 btn.innerHTML = '❌ ' + (getTranslation('download_btn_failed') || 'Failed');
             }

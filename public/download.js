@@ -53,7 +53,7 @@ async function handleDownload() {
         // Restore button text from i18n
         if (typeof detectLanguage === 'function') {
             const lang = detectLanguage();
-            const texts = { en: 'Download', tr: 'İndir', de: 'Herunterladen', es: 'Descargar', fr: 'Télécharger', pt: 'Baixar', ar: 'تحميل' };
+            const texts = { en: 'Download', tr: 'İndir', de: 'Herunterladen', es: 'Descargar', fr: 'Télécharger', pt: 'Baixar', ar: 'تحميل', hi: 'डाउनलोड करें' };
             downloadBtn.textContent = texts[lang] || 'Download';
         } else {
             downloadBtn.textContent = 'Download';
@@ -114,5 +114,9 @@ function escapeHtml(text) {
 }
 
 function trackDownload() {
-    fetch('/api/track-download', { method: 'POST' }).catch(() => {});
+    fetch('/api/track-download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'direct' })
+    }).catch(() => {});
 }
