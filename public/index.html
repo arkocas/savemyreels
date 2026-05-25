@@ -408,7 +408,7 @@
                 fetch('/api/track-download', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ source: 'search', query: fromQuery || '' })
+                    body: JSON.stringify({ source: 'search', query: fromQuery || '', url: reelUrl })
                 }).catch(() => {});
             } else {
                 btn.innerHTML = '❌ ' + (getTranslation('download_btn_failed') || 'Failed');

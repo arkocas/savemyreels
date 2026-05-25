@@ -92,7 +92,7 @@ function showResult(data) {
             ${data.owner ? `<p class="download-owner">@${escapeHtml(data.owner.username)}</p>` : ''}
             ${data.caption ? `<p class="download-caption">${escapeHtml(data.caption.substring(0, 100))}${data.caption.length > 100 ? '...' : ''}</p>` : ''}
         </div>
-        <a href="${proxyUrl}" class="download-link" download="${escapeHtml(filename)}.mp4" onclick="trackDownload()">⬇️ ${getTranslation('download_video') || 'Download Video'}</a>
+        <a href="${proxyUrl}" class="download-link" download="${escapeHtml(filename)}.mp4" onclick="trackDownload('${escapeHtml(reelUrlInput.value.trim())}')">⬇️ ${getTranslation('download_video') || 'Download Video'}</a>
     `;
 }
 
@@ -113,10 +113,10 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function trackDownload() {
+function trackDownload(reelUrl) {
     fetch('/api/track-download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source: 'direct' })
+        body: JSON.stringify({ source: 'direct', url: reelUrl || '' })
     }).catch(() => {});
 }

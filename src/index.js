@@ -118,13 +118,15 @@ async function handleTrackDownload(request, env) {
         const current = parseInt(await env.STATS.get('download_count') || '0', 10);
         await env.STATS.put('download_count', String(current + 1));
 
-        // Body'den source ve query bilgisini al
+        // Body'den source, query ve url bilgisini al
         let source = 'direct';
         let query = '';
+        let reelUrl = '';
         try {
             const body = await request.json();
-            source = body.source || 'direct'; // 'direct' veya 'search'
+            source = body.source || 'direct';
             query = (body.query || '').trim().toLowerCase().substring(0, 100);
+            reelUrl = (body.url || '').trim().substring(0, 300);
         } catch (_) {}
 
         // Kaynağa göre sayaç tut
@@ -132,16 +134,22 @@ async function handleTrackDownload(request, env) {
         const sourceCount = parseInt(await env.STATS.get(sourceKey) || '0', 10);
         await env.STATS.put(sourceKey, String(sourceCount + 1));
 
-        // Arama sonucundan indirildiyse hangi sorgudan geldiğini kaydet
+        // Tüm indirmeleri URL ile birlikte kaydet (son 100)
+        const allDownloadsRaw = await env.STATS.get('recent_downloads') || '[]';
+        const allDownloads = JSON.parse(allDownloadsRaw);
+        allDownloads.unshift({ url: reelUrl, source, query: query || undefined, time: Date.now() });
+        if (allDownloads.length > 100) allDownloads.length = 100;
+        await env.STATS.put('recent_downloads', JSON.stringify(allDownloads));
+
+        // Arama sonucundan indirildiyse hangi sorgudan geldiğini de kaydet
         if (source === 'search' && query) {
             const queryDownloadKey = `download_from_search:${query}`;
             const queryDownloadCount = parseInt(await env.STATS.get(queryDownloadKey) || '0', 10);
             await env.STATS.put(queryDownloadKey, String(queryDownloadCount + 1));
 
-            // Son indirilen aramaları listede tut (son 50)
             const recentRaw = await env.STATS.get('recent_search_downloads') || '[]';
             const recent = JSON.parse(recentRaw);
-            recent.unshift({ query, time: Date.now() });
+            recent.unshift({ url: reelUrl, query, time: Date.now() });
             if (recent.length > 50) recent.length = 50;
             await env.STATS.put('recent_search_downloads', JSON.stringify(recent));
         }
@@ -201,18 +209,22 @@ async function handleStats(request, env) {
         const downloadDirect = parseInt(await env.STATS.get('download_source:direct') || '0', 10);
         const downloadFromSearch = parseInt(await env.STATS.get('download_source:search') || '0', 10);
 
-        const recentRaw = await env.STATS.get('recent_searches') || '[]';
-        const recent = JSON.parse(recentRaw);
+        const recentSearchesRaw = await env.STATS.get('recent_searches') || '[]';
+        const recentSearches = JSON.parse(recentSearchesRaw);
 
-        const recentDownloadsRaw = await env.STATS.get('recent_search_downloads') || '[]';
-        const recentSearchDownloads = JSON.parse(recentDownloadsRaw);
+        const recentDownloadsRaw = await env.STATS.get('recent_downloads') || '[]';
+        const recentDownloads = JSON.parse(recentDownloadsRaw);
+
+        const recentSearchDownloadsRaw = await env.STATS.get('recent_search_downloads') || '[]';
+        const recentSearchDownloads = JSON.parse(recentSearchDownloadsRaw);
 
         return Response.json({
             download_count: downloadCount,
             download_direct: downloadDirect,
             download_from_search: downloadFromSearch,
             search_count: searchCount,
-            recent_searches: recent,
+            recent_searches: recentSearches,
+            recent_downloads: recentDownloads,
             recent_search_downloads: recentSearchDownloads
         });
     } catch (err) {
