@@ -1,3 +1,5 @@
+import { WorkerEntrypoint } from 'cloudflare:workers';
+
 const IG_CONFIG = {
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     xIgAppId: '936619743392459'
@@ -179,8 +181,65 @@ async function handleStats(request, env) {
     }
 }
 
-export default {
-    async fetch(request, env) {
+// SEO meta translations
+const seoTranslations = {
+    en: {
+        title: 'SaveMyReels - Search & Download Instagram Reels Free | Instagram Reel Downloader',
+        description: 'Search and download Instagram Reels for free. Find trending reels by keyword, download Instagram videos in MP4 format. No login required. Fast, free Instagram Reels search engine and downloader.',
+        ogTitle: 'SaveMyReels - Search & Download Instagram Reels Free',
+        ogDescription: 'Search and download Instagram Reels for free. Find trending reels by keyword, download videos in MP4. No login required.'
+    },
+    tr: {
+        title: 'SaveMyReels - Instagram Reels Ara & İndir Ücretsiz | Instagram Reel İndirici',
+        description: 'Instagram Reels\'leri ücretsiz arayın ve indirin. Anahtar kelimeye göre trend reels bulun, Instagram videolarını MP4 formatında indirin. Giriş gerekmez. Hızlı, ücretsiz Instagram Reels arama motoru ve indirici.',
+        ogTitle: 'SaveMyReels - Instagram Reels Ara & İndir Ücretsiz',
+        ogDescription: 'Instagram Reels\'leri ücretsiz arayın ve indirin. Anahtar kelimeye göre trend reels bulun, MP4 formatında video indirin. Giriş gerekmez.'
+    },
+    de: {
+        title: 'SaveMyReels - Instagram Reels Suchen & Kostenlos Herunterladen | Instagram Reel Downloader',
+        description: 'Instagram Reels kostenlos suchen und herunterladen. Finden Sie trendige Reels nach Stichwort, laden Sie Instagram-Videos im MP4-Format herunter. Keine Anmeldung erforderlich. Schnelle, kostenlose Instagram Reels-Suchmaschine und Downloader.',
+        ogTitle: 'SaveMyReels - Instagram Reels Suchen & Kostenlos Herunterladen',
+        ogDescription: 'Instagram Reels kostenlos suchen und herunterladen. Finden Sie trendige Reels nach Stichwort, laden Sie Videos im MP4-Format herunter. Keine Anmeldung erforderlich.'
+    },
+    es: {
+        title: 'SaveMyReels - Buscar y Descargar Instagram Reels Gratis | Descargador de Instagram Reels',
+        description: 'Busca y descarga Instagram Reels gratis. Encuentra reels en tendencia por palabra clave, descarga videos de Instagram en formato MP4. No requiere inicio de sesión. Motor de búsqueda y descargador de Instagram Reels rápido y gratuito.',
+        ogTitle: 'SaveMyReels - Buscar y Descargar Instagram Reels Gratis',
+        ogDescription: 'Busca y descarga Instagram Reels gratis. Encuentra reels en tendencia por palabra clave, descarga videos en MP4. No requiere inicio de sesión.'
+    },
+    fr: {
+        title: 'SaveMyReels - Rechercher et Télécharger Instagram Reels Gratuit | Téléchargeur Instagram Reels',
+        description: 'Recherchez et téléchargez des Instagram Reels gratuitement. Trouvez des reels tendance par mot-clé, téléchargez des vidéos Instagram au format MP4. Aucune connexion requise. Moteur de recherche et téléchargeur Instagram Reels rapide et gratuit.',
+        ogTitle: 'SaveMyReels - Rechercher et Télécharger Instagram Reels Gratuit',
+        ogDescription: 'Recherchez et téléchargez des Instagram Reels gratuitement. Trouvez des reels tendance par mot-clé, téléchargez des vidéos en MP4. Aucune connexion requise.'
+    },
+    pt: {
+        title: 'SaveMyReels - Pesquisar e Baixar Instagram Reels Grátis | Baixador de Instagram Reels',
+        description: 'Pesquise e baixe Instagram Reels gratuitamente. Encontre reels em alta por palavra-chave, baixe vídeos do Instagram em formato MP4. Não requer login. Motor de busca e baixador de Instagram Reels rápido e gratuito.',
+        ogTitle: 'SaveMyReels - Pesquisar e Baixar Instagram Reels Grátis',
+        ogDescription: 'Pesquise e baixe Instagram Reels gratuitamente. Encontre reels em alta por palavra-chave, baixe vídeos em MP4. Não requer login.'
+    },
+    ar: {
+        title: 'SaveMyReels - ابحث وحمّل Instagram Reels مجاناً | أداة تحميل Instagram Reels',
+        description: 'ابحث وحمّل Instagram Reels مجاناً. ابحث عن الريلز الرائجة بالكلمة المفتاحية، حمّل فيديوهات Instagram بصيغة MP4. لا يتطلب تسجيل دخول. محرك بحث وأداة تحميل Instagram Reels سريعة ومجانية.',
+        ogTitle: 'SaveMyReels - ابحث وحمّل Instagram Reels مجاناً',
+        ogDescription: 'ابحث وحمّل Instagram Reels مجاناً. ابحث عن الريلز الرائجة بالكلمة المفتاحية، حمّل الفيديوهات بصيغة MP4. لا يتطلب تسجيل دخول.'
+    }
+};
+
+function detectLanguage(request) {
+    const acceptLanguage = request.headers.get('Accept-Language') || 'en';
+    const primaryLang = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
+    
+    // Supported languages
+    const supportedLangs = ['en', 'tr', 'de', 'es', 'fr', 'pt', 'ar'];
+    return supportedLangs.includes(primaryLang) ? primaryLang : 'en';
+}
+
+
+export default class extends WorkerEntrypoint {
+    async fetch(request) {
+        const env = this.env;
         const url = new URL(request.url);
 
         if (url.pathname === '/api/download') {
@@ -199,7 +258,56 @@ export default {
             return handleStats(request, env);
         }
 
-        // Let assets handle everything else
-        return env.ASSETS.fetch(request);
+        // Get the asset response first
+        const response = await env.ASSETS.fetch(request);
+
+        // Only process HTML responses
+        const contentType = response.headers.get('Content-Type') || '';
+        if (!contentType.includes('text/html')) {
+            return response;
+        }
+
+        // Detect language
+        const lang = detectLanguage(request);
+        const seo = seoTranslations[lang] || seoTranslations.en;
+
+        // Use HTMLRewriter to modify meta tags
+        return new HTMLRewriter()
+            .on('title', {
+                element(element) {
+                    element.setInnerContent(seo.title);
+                }
+            })
+            .on('meta[name="description"]', {
+                element(element) {
+                    element.setAttribute('content', seo.description);
+                }
+            })
+            .on('meta[property="og:title"]', {
+                element(element) {
+                    element.setAttribute('content', seo.ogTitle);
+                }
+            })
+            .on('meta[property="og:description"]', {
+                element(element) {
+                    element.setAttribute('content', seo.ogDescription);
+                }
+            })
+            .on('meta[name="twitter:title"]', {
+                element(element) {
+                    element.setAttribute('content', seo.ogTitle);
+                }
+            })
+            .on('meta[name="twitter:description"]', {
+                element(element) {
+                    element.setAttribute('content', seo.ogDescription);
+                }
+            })
+            .on('html', {
+                element(element) {
+                    element.setAttribute('lang', lang);
+                }
+            })
+            .transform(response);
     }
 };
