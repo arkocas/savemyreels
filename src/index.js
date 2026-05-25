@@ -235,46 +235,46 @@ async function handleStats(request, env) {
 // SEO meta translations
 const seoTranslations = {
     en: {
-        title: 'SaveMyReels - Download Instagram Reels Free, No Watermark | Reels Finder & Downloader',
-        description: 'Download Instagram Reels for free — no watermark, no login required. Paste any Reel URL and save as MP4 in seconds. Also search and find Instagram Reels by keyword.',
-        ogTitle: 'SaveMyReels - Download Instagram Reels Free, No Watermark',
-        ogDescription: 'Download Instagram Reels for free — no watermark, no login. Paste the URL and save as MP4 instantly. Search Reels by keyword too.'
+        title: 'SaveMyReels - Free Reels Finder | Search & Download Instagram Reels',
+        description: 'Search and download Instagram Reels for free. Find trending reels by keyword, download videos as MP4 — no watermark, no login required.',
+        ogTitle: 'SaveMyReels - Search & Download Instagram Reels Free',
+        ogDescription: 'Search and download Instagram Reels for free. Find trending reels by keyword, download videos in MP4. No watermark, no login required.'
     },
     tr: {
-        title: 'SaveMyReels - Instagram Reels İndir Filigransız & Ücretsiz | Reels Bulucu & İndirici',
-        description: 'Instagram Reels\'leri ücretsiz indirin — filigran yok, giriş gerekmez. Reel URL\'sini yapıştırın ve saniyeler içinde MP4 olarak kaydedin. Ayrıca anahtar kelimeyle Reels arayın ve bulun.',
-        ogTitle: 'SaveMyReels - Instagram Reels İndir Filigransız & Ücretsiz',
-        ogDescription: 'Instagram Reels\'leri ücretsiz indirin — filigran yok, giriş gerekmez. URL\'yi yapıştırın ve anında MP4 olarak kaydedin.'
+        title: 'SaveMyReels - Ücretsiz Reels Bulucu | Instagram Reels Ara & İndir',
+        description: 'Instagram Reels\'leri ücretsiz arayın ve indirin. Anahtar kelimeyle trend reels bulun, MP4 olarak kaydedin — filigran yok, giriş gerekmez.',
+        ogTitle: 'SaveMyReels - Instagram Reels Ara & İndir Ücretsiz',
+        ogDescription: 'Instagram Reels\'leri ücretsiz arayın ve indirin. Trend reels bulun, MP4 olarak kaydedin. Filigran yok, giriş gerekmez.'
     },
     de: {
-        title: 'SaveMyReels - Instagram Reels Herunterladen, Kein Wasserzeichen | Reels Finder & Downloader',
-        description: 'Instagram Reels kostenlos herunterladen — kein Wasserzeichen, kein Login. Reel-URL einfügen und in Sekunden als MP4 speichern. Auch Reels nach Stichwort suchen und finden.',
-        ogTitle: 'SaveMyReels - Instagram Reels Herunterladen, Kein Wasserzeichen',
-        ogDescription: 'Instagram Reels kostenlos herunterladen — kein Wasserzeichen, kein Login. URL einfügen und sofort als MP4 speichern.'
+        title: 'SaveMyReels - Kostenloser Reels Finder | Instagram Reels Suchen & Herunterladen',
+        description: 'Instagram Reels kostenlos suchen und herunterladen. Reels nach Stichwort finden, als MP4 speichern — kein Wasserzeichen, kein Login.',
+        ogTitle: 'SaveMyReels - Instagram Reels Suchen & Herunterladen Kostenlos',
+        ogDescription: 'Instagram Reels kostenlos suchen und herunterladen. Reels nach Stichwort finden, als MP4 speichern. Kein Wasserzeichen, kein Login.'
     },
     es: {
-        title: 'SaveMyReels - Descargar Instagram Reels Gratis, Sin Marca de Agua | Buscador de Reels',
-        description: 'Descarga Instagram Reels gratis — sin marca de agua, sin login. Pega la URL del Reel y guárdalo como MP4 en segundos. También busca y encuentra Reels por palabra clave.',
-        ogTitle: 'SaveMyReels - Descargar Instagram Reels Gratis, Sin Marca de Agua',
-        ogDescription: 'Descarga Instagram Reels gratis — sin marca de agua, sin login. Pega la URL y guarda como MP4 al instante.'
+        title: 'SaveMyReels - Buscador de Reels Gratis | Buscar y Descargar Instagram Reels',
+        description: 'Busca y descarga Instagram Reels gratis. Encuentra reels en tendencia, descarga como MP4 — sin marca de agua, sin login.',
+        ogTitle: 'SaveMyReels - Buscar y Descargar Instagram Reels Gratis',
+        ogDescription: 'Busca y descarga Instagram Reels gratis. Encuentra reels en tendencia, descarga como MP4. Sin marca de agua, sin login.'
     },
     fr: {
-        title: 'SaveMyReels - Télécharger Instagram Reels Gratuit, Sans Filigrane | Chercheur de Reels',
-        description: 'Téléchargez des Instagram Reels gratuitement — sans filigrane, sans connexion. Collez l\'URL du Reel et sauvegardez en MP4 en quelques secondes. Recherchez aussi des Reels par mot-clé.',
-        ogTitle: 'SaveMyReels - Télécharger Instagram Reels Gratuit, Sans Filigrane',
-        ogDescription: 'Téléchargez des Instagram Reels gratuitement — sans filigrane, sans connexion. Collez l\'URL et sauvegardez en MP4 instantanément.'
+        title: 'SaveMyReels - Chercheur de Reels Gratuit | Rechercher et Télécharger Instagram Reels',
+        description: 'Recherchez et téléchargez des Instagram Reels gratuitement. Trouvez des reels tendance, téléchargez en MP4 — sans filigrane, sans connexion.',
+        ogTitle: 'SaveMyReels - Rechercher et Télécharger Instagram Reels Gratuit',
+        ogDescription: 'Recherchez et téléchargez des Instagram Reels gratuitement. Trouvez des reels tendance, téléchargez en MP4. Sans filigrane, sans connexion.'
     },
     pt: {
-        title: 'SaveMyReels - Baixar Instagram Reels Grátis, Sem Marca d\'Água | Buscador de Reels',
-        description: 'Baixe Instagram Reels gratuitamente — sem marca d\'água, sem login. Cole a URL do Reel e salve como MP4 em segundos. Também pesquise e encontre Reels por palavra-chave.',
-        ogTitle: 'SaveMyReels - Baixar Instagram Reels Grátis, Sem Marca d\'Água',
-        ogDescription: 'Baixe Instagram Reels gratuitamente — sem marca d\'água, sem login. Cole a URL e salve como MP4 instantaneamente.'
+        title: 'SaveMyReels - Buscador de Reels Grátis | Pesquisar e Baixar Instagram Reels',
+        description: 'Pesquise e baixe Instagram Reels gratuitamente. Encontre reels em alta, baixe como MP4 — sem marca d\'água, sem login.',
+        ogTitle: 'SaveMyReels - Pesquisar e Baixar Instagram Reels Grátis',
+        ogDescription: 'Pesquise e baixe Instagram Reels gratuitamente. Encontre reels em alta, baixe como MP4. Sem marca d\'água, sem login.'
     },
     ar: {
-        title: 'SaveMyReels - تحميل Instagram Reels مجاناً بدون علامة مائية | محرك بحث Reels',
-        description: 'حمّل Instagram Reels مجاناً — بدون علامة مائية، بدون تسجيل دخول. الصق رابط الـ Reel واحفظه بصيغة MP4 في ثوانٍ. ابحث أيضاً عن Reels بالكلمة المفتاحية.',
-        ogTitle: 'SaveMyReels - تحميل Instagram Reels مجاناً بدون علامة مائية',
-        ogDescription: 'حمّل Instagram Reels مجاناً — بدون علامة مائية، بدون تسجيل دخول. الصق الرابط واحفظ بصيغة MP4 فوراً.'
+        title: 'SaveMyReels - محرك بحث Reels مجاني | ابحث وحمّل Instagram Reels',
+        description: 'ابحث وحمّل Instagram Reels مجاناً. ابحث عن الريلز الرائجة، حمّل بصيغة MP4 — بدون علامة مائية، بدون تسجيل دخول.',
+        ogTitle: 'SaveMyReels - ابحث وحمّل Instagram Reels مجاناً',
+        ogDescription: 'ابحث وحمّل Instagram Reels مجاناً. ابحث عن الريلز الرائجة، حمّل بصيغة MP4. بدون علامة مائية، بدون تسجيل دخول.'
     }
 };
 
