@@ -523,6 +523,37 @@ footer {
     line-height: 1.6;
     text-align: left;
 }
+.seo-article details {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+}
+.seo-article summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #64748b;
+    outline: none;
+    user-select: none;
+    list-style: none; /* Hide default arrow in some browsers */
+}
+.seo-article summary::-webkit-details-marker {
+    display: none;
+}
+.seo-article summary::after {
+    content: '+';
+    float: right;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+.seo-article details[open] summary::after {
+    content: '−';
+}
+.seo-article .seo-content {
+    margin-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+}
 .seo-article h2, .seo-article h3 {
     color: #64748b;
     font-size: 1rem;
