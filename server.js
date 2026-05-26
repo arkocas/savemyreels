@@ -156,7 +156,7 @@ const server = http.createServer(async (req, res) => {
 
     // Static file serving
     let filePath = pathname === '/' ? '/index.html' : pathname;
-    filePath = path.join(__dirname, filePath);
+    filePath = path.join(__dirname, 'public', filePath);
 
     const ext = path.extname(filePath);
     const contentType = mimeTypes[ext] || 'application/octet-stream';

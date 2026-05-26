@@ -48,7 +48,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels is not affiliated with Instagram, Meta, TikTok, or ByteDance. Instagram is a trademark of Meta Platforms, Inc.",
         error_invalid_url: "Please enter a valid Instagram Reel URL",
         error_invalid_url_tiktok: "Please enter a valid TikTok Video URL",
-        error_no_video: "This post does not contain a video."
+        error_no_video: "This post does not contain a video.",
+        hero_title_instagram: "Find & Download Instagram Reels",
+        hero_title_tiktok: "Find & Download TikTok Videos",
+        hero_subtitle_instagram: "Search any topic to find trending Instagram Reels, or paste a Reel link to download without watermark.",
+        hero_subtitle_tiktok: "Search any topic to find trending TikTok videos, or paste a TikTok link to download without watermark.",
+        download_title_instagram: "Download Instagram Reels",
+        download_title_tiktok: "Download TikTok Videos",
+        download_subtitle_instagram: "Paste an Instagram Reel URL to download without watermark",
+        download_subtitle_tiktok: "Paste a TikTok video URL to download without watermark"
     },
     tr: {
         nav_how: "Nasıl Çalışır",
@@ -99,7 +107,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels, Instagram, Meta, TikTok veya ByteDance ile bağlantılı değildir. Instagram, Meta Platforms, Inc. şirketinin ticari markasıdır.",
         error_invalid_url: "Lütfen geçerli bir Instagram Reel URL'si girin",
         error_invalid_url_tiktok: "Lütfen geçerli bir TikTok Video URL'si girin",
-        error_no_video: "Bu gönderi bir video içermiyor."
+        error_no_video: "Bu gönderi bir video içermiyor.",
+        hero_title_instagram: "Instagram Reels Bul ve İndir",
+        hero_title_tiktok: "TikTok Videolarını Bul ve İndir",
+        hero_subtitle_instagram: "Trend Instagram Reels videolarını bulmak için arama yapın veya filigransız indirmek için Reel linkini yapıştırın.",
+        hero_subtitle_tiktok: "Trend TikTok videolarını bulmak için arama yapın veya filigransız indirmek için TikTok linkini yapıştırın.",
+        download_title_instagram: "Instagram Reels İndir",
+        download_title_tiktok: "TikTok Videoları İndir",
+        download_subtitle_instagram: "Filigransız indirmek için Instagram Reel URL'sini yapıştırın",
+        download_subtitle_tiktok: "Filigransız indirmek için TikTok video URL'sini yapıştırın"
     },
     de: {
         nav_how: "So funktioniert's",
@@ -150,7 +166,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels ist nicht mit Instagram, Meta, TikTok oder ByteDance verbunden.",
         error_invalid_url: "Bitte geben Sie eine gültige Instagram Reel URL ein",
         error_invalid_url_tiktok: "Bitte geben Sie eine gültige TikTok Video URL ein",
-        error_no_video: "Dieser Beitrag enthält kein Video."
+        error_no_video: "Dieser Beitrag enthält kein Video.",
+        hero_title_instagram: "Instagram Reels Finden & Herunterladen",
+        hero_title_tiktok: "TikTok Videos Finden & Herunterladen",
+        hero_subtitle_instagram: "Suchen Sie nach Themen, um Instagram Reels zu finden, oder fügen Sie einen Reel-Link ein, um ohne Wasserzeichen herunterzuladen.",
+        hero_subtitle_tiktok: "Suchen Sie nach Themen, um TikTok-Videos zu finden, oder fügen Sie einen TikTok-Link ein, um ohne Wasserzeichen herunterzuladen.",
+        download_title_instagram: "Instagram Reels Herunterladen",
+        download_title_tiktok: "TikTok Videos Herunterladen",
+        download_subtitle_instagram: "Instagram Reel URL einfügen, um ohne Wasserzeichen herunterzuladen",
+        download_subtitle_tiktok: "TikTok Video URL einfügen, um ohne Wasserzeichen herunterzuladen"
     },
     es: {
         nav_how: "Cómo funciona",
@@ -201,7 +225,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels no está afiliado a Instagram, Meta, TikTok ni ByteDance.",
         error_invalid_url: "Por favor introduce una URL válida de Instagram Reel",
         error_invalid_url_tiktok: "Por favor introduce una URL válida de TikTok",
-        error_no_video: "Esta publicación no contiene un video."
+        error_no_video: "Esta publicación no contiene un video.",
+        hero_title_instagram: "Busca y Descarga Instagram Reels",
+        hero_title_tiktok: "Busca y Descarga Videos de TikTok",
+        hero_subtitle_instagram: "Busca cualquier tema para encontrar Instagram Reels, o pega un enlace de Reel para descargar sin marca de agua.",
+        hero_subtitle_tiktok: "Busca cualquier tema para encontrar videos de TikTok, o pega un enlace de TikTok para descargar sin marca de agua.",
+        download_title_instagram: "Descargar Instagram Reels",
+        download_title_tiktok: "Descargar Videos de TikTok",
+        download_subtitle_instagram: "Pega la URL del Instagram Reel para descargar sin marca de agua",
+        download_subtitle_tiktok: "Pega la URL del video de TikTok para descargar sin marca de agua"
     },
     fr: {
         nav_how: "Comment ça marche",
@@ -252,7 +284,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels n'est pas affilié à Instagram, Meta, TikTok ou ByteDance.",
         error_invalid_url: "Veuillez entrer une URL Instagram Reel valide",
         error_invalid_url_tiktok: "Veuillez entrer une URL TikTok valide",
-        error_no_video: "Cette publication ne contient pas de vidéo."
+        error_no_video: "Cette publication ne contient pas de vidéo.",
+        hero_title_instagram: "Trouvez et Téléchargez des Instagram Reels",
+        hero_title_tiktok: "Trouvez et Téléchargez des Vidéos TikTok",
+        hero_subtitle_instagram: "Recherchez un sujet pour trouver des Instagram Reels, ou collez un lien Reel pour télécharger sans filigrane.",
+        hero_subtitle_tiktok: "Recherchez un sujet pour trouver des vidéos TikTok, ou collez un lien TikTok pour télécharger sans filigrane.",
+        download_title_instagram: "Télécharger des Instagram Reels",
+        download_title_tiktok: "Télécharger des Vidéos TikTok",
+        download_subtitle_instagram: "Collez l'URL du Reel Instagram pour télécharger sans filigrane",
+        download_subtitle_tiktok: "Collez l'URL de la vidéo TikTok pour télécharger sans filigrane"
     },
     pt: {
         nav_how: "Como funciona",
@@ -303,7 +343,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels não é afiliado ao Instagram, Meta, TikTok ou ByteDance.",
         error_invalid_url: "Por favor insira uma URL válida de Instagram Reel",
         error_invalid_url_tiktok: "Por favor insira uma URL válida de TikTok",
-        error_no_video: "Esta publicação não contém um vídeo."
+        error_no_video: "Esta publicação não contém um vídeo.",
+        hero_title_instagram: "Encontre e Baixe Instagram Reels",
+        hero_title_tiktok: "Encontre e Baixe Vídeos do TikTok",
+        hero_subtitle_instagram: "Pesquise qualquer tema para encontrar Instagram Reels, ou cole um link de Reel para baixar sem marca d'água.",
+        hero_subtitle_tiktok: "Pesquise qualquer tema para encontrar vídeos do TikTok, ou cole um link do TikTok para baixar sem marca d'água.",
+        download_title_instagram: "Baixar Instagram Reels",
+        download_title_tiktok: "Baixar Vídeos do TikTok",
+        download_subtitle_instagram: "Cole a URL do Reel Instagram para baixar sem marca d'água",
+        download_subtitle_tiktok: "Cole a URL do vídeo TikTok para baixar sem marca d'água"
     },
     ar: {
         nav_how: "كيف يعمل",
@@ -354,7 +402,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels غير تابع لـ Instagram، Meta، TikTok أو ByteDance.",
         error_invalid_url: "الرجاء إدخال رابط Instagram Reel صحيح",
         error_invalid_url_tiktok: "الرجاء إدخال رابط TikTok صحيح",
-        error_no_video: "هذا المنشور لا يحتوي على فيديو."
+        error_no_video: "هذا المنشور لا يحتوي على فيديو.",
+        hero_title_instagram: "ابحث وحمّل Instagram Reels",
+        hero_title_tiktok: "ابحث وحمّل فيديوهات TikTok",
+        hero_subtitle_instagram: "ابحث عن أي موضوع للعثور على Instagram Reels، أو الصق رابط Reel للتحميل بدون علامة مائية.",
+        hero_subtitle_tiktok: "ابحث عن أي موضوع للعثور على فيديوهات TikTok، أو الصق رابط TikTok للتحميل بدون علامة مائية.",
+        download_title_instagram: "تحميل Instagram Reels",
+        download_title_tiktok: "تحميل فيديوهات TikTok",
+        download_subtitle_instagram: "الصق رابط Instagram Reel للتحميل بدون علامة مائية",
+        download_subtitle_tiktok: "الصق رابط فيديو TikTok للتحميل بدون علامة مائية"
     },
     hi: {
         nav_how: "यह कैसे काम करता है",
@@ -405,7 +461,15 @@ const translations = {
         footer_disclaimer: "SaveMyReels Instagram, Meta, TikTok या ByteDance से संबद्ध नहीं है।",
         error_invalid_url: "कृपया एक वैध Instagram Reel URL दर्ज करें",
         error_invalid_url_tiktok: "कृपया एक वैध TikTok वीडियो URL दर्ज करें",
-        error_no_video: "इस पोस्ट में कोई वीडियो नहीं है।"
+        error_no_video: "इस पोस्ट में कोई वीडियो नहीं है।",
+        hero_title_instagram: "Instagram Reels खोजें और डाउनलोड करें",
+        hero_title_tiktok: "TikTok वीडियो खोजें और डाउनलोड करें",
+        hero_subtitle_instagram: "Instagram Reels खोजने के लिए कोई भी विषय खोजें, या वॉटरमार्क के बिना डाउनलोड करने के लिए Reel लिंक पेस्ट करें।",
+        hero_subtitle_tiktok: "TikTok वीडियो खोजने के लिए कोई भी विषय खोजें, या वॉटरमार्क के बिना डाउनलोड करने के लिए TikTok लिंक पेस्ट करें।",
+        download_title_instagram: "Instagram Reels डाउनलोड करें",
+        download_title_tiktok: "TikTok वीडियो डाउनलोड करें",
+        download_subtitle_instagram: "वॉटरमार्क के बिना डाउनलोड करने के लिए Instagram Reel URL पेस्ट करें",
+        download_subtitle_tiktok: "वॉटरमार्क के बिना डाउनलोड करने के लिए TikTok वीडियो URL पेस्ट करें"
     }
 };
 
@@ -419,11 +483,15 @@ function detectLanguage() {
 function applyTranslations() {
     const lang = detectLanguage();
     const t = translations[lang] || translations['en'];
+    const platform = window.currentPlatform || 'instagram';
 
-    // Apply data-i18n attributes
+    // Apply data-i18n attributes (with platform-specific override)
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (t[key] !== undefined) {
+        const platformKey = key + '_' + platform;
+        if (t[platformKey] !== undefined) {
+            el.innerHTML = t[platformKey];
+        } else if (t[key] !== undefined) {
             el.innerHTML = t[key];
         }
     });
