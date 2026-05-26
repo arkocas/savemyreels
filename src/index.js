@@ -167,6 +167,7 @@ async function handleTrackDownload(request, env) {
     }
 }
 
+/* TikTok download handler — disabled for Instagram Reels focus
 async function handleTikTokDownload(request) {
     const url = new URL(request.url);
     const tiktokUrl = url.searchParams.get('url');
@@ -195,10 +196,6 @@ async function handleTikTokDownload(request) {
 
         const item = json.data;
 
-        // Note: TikWM play urls are often directly accessible or need proxy.
-        // They sometimes redirect or return 403 if accessed directly from browser without proper headers.
-        // Our proxy-video endpoint should handle it.
-
         return Response.json({
             id: item.id,
             is_video: true,
@@ -216,6 +213,7 @@ async function handleTikTokDownload(request) {
         return Response.json({ error: 'Failed to fetch TikTok data' }, { status: 500 });
     }
 }
+*/
 
 async function handleTrackSearch(request, env) {
     if (request.method !== 'POST') {
@@ -276,49 +274,49 @@ async function handleStats(request, env) {
     }
 }
 
-// SEO meta translations
+// SEO meta translations — focused on Instagram Reels Finder (primary identity)
 const seoTranslations = {
     en: {
-        title: 'SaveMyReels - Free Reels & TikTok Finder | Search & Download',
-        description: 'Search and download Instagram Reels and TikToks for free. Find trending videos by keyword, download videos as MP4 — no watermark, no login required.',
-        ogTitle: 'SaveMyReels - Search & Download Instagram & TikTok Free',
-        ogDescription: 'Search and download Instagram Reels and TikToks for free. Find trending videos by keyword, download in MP4. No watermark, no login required.'
+        title: 'SaveMyReels - Best Free Instagram Reels Finder | Search & Download Reels',
+        description: 'SaveMyReels is the #1 free Instagram Reels Finder. Search and find trending Instagram Reels by keyword, download any Reel as HD MP4 — no watermark, no login required.',
+        ogTitle: 'SaveMyReels - Instagram Reels Finder & Downloader | Free',
+        ogDescription: 'The best free Instagram Reels Finder. Search trending Reels by keyword, download as HD MP4 without watermarks. No login required.'
     },
     tr: {
-        title: 'SaveMyReels - Ücretsiz Reels & TikTok Bulucu | Ara & İndir',
-        description: 'Instagram Reels ve TikTok videolarını ücretsiz arayın ve indirin. Anahtar kelimeyle trend videolar bulun, MP4 olarak kaydedin — filigran yok, giriş gerekmez.',
-        ogTitle: 'SaveMyReels - Instagram & TikTok Ara & İndir Ücretsiz',
-        ogDescription: 'Instagram Reels ve TikTok videolarını ücretsiz arayın ve indirin. Trend videolar bulun, MP4 olarak kaydedin. Filigran yok, giriş gerekmez.'
+        title: 'SaveMyReels - En İyi Ücretsiz Instagram Reels Bulucu | Reels Ara ve İndir',
+        description: 'SaveMyReels, 1 numaralı ücretsiz Instagram Reels Bulucu (Reels Finder) aracıdır. Trend Reels videolarını anahtar kelimeyle bulun, filigransız HD MP4 olarak indirin.',
+        ogTitle: 'SaveMyReels - Instagram Reels Bulucu ve İndirici | Ücretsiz',
+        ogDescription: 'En iyi ücretsiz Instagram Reels Bulucu. Trend Reels arayın, filigransız HD MP4 olarak indirin. Giriş gerekmez.'
     },
     de: {
-        title: 'SaveMyReels - Kostenloser Reels & TikTok Finder | Suchen & Herunterladen',
-        description: 'Instagram Reels und TikToks kostenlos suchen und herunterladen. Videos nach Stichwort finden, als MP4 speichern — kein Wasserzeichen, kein Login.',
-        ogTitle: 'SaveMyReels - Instagram & TikTok Suchen & Herunterladen Kostenlos',
-        ogDescription: 'Instagram Reels und TikToks kostenlos suchen und herunterladen. Videos nach Stichwort finden, als MP4 speichern. Kein Wasserzeichen, kein Login.'
+        title: 'SaveMyReels - Bester kostenloser Instagram Reels Finder | Reels suchen & herunterladen',
+        description: 'SaveMyReels ist der beste kostenlose Instagram Reels Finder. Finden Sie Trend-Reels per Stichwort, laden Sie als HD MP4 herunter — kein Wasserzeichen, kein Login.',
+        ogTitle: 'SaveMyReels - Instagram Reels Finder & Downloader | Kostenlos',
+        ogDescription: 'Der beste kostenlose Instagram Reels Finder. Trend-Reels suchen, als HD MP4 ohne Wasserzeichen herunterladen. Kein Login nötig.'
     },
     es: {
-        title: 'SaveMyReels - Buscador de Reels y TikTok Gratis | Buscar y Descargar',
-        description: 'Busca y descarga Instagram Reels y TikToks gratis. Encuentra videos en tendencia, descarga como MP4 — sin marca de agua, sin login.',
-        ogTitle: 'SaveMyReels - Buscar y Descargar Instagram y TikTok Gratis',
-        ogDescription: 'Busca y descarga Instagram Reels y TikToks gratis. Encuentra videos en tendencia, descarga como MP4. Sin marca de agua, sin login.'
+        title: 'SaveMyReels - Mejor Buscador de Instagram Reels Gratis | Buscar y Descargar Reels',
+        description: 'SaveMyReels es el mejor buscador de Instagram Reels gratis. Encuentra Reels en tendencia por palabra clave, descarga como MP4 HD — sin marca de agua, sin login.',
+        ogTitle: 'SaveMyReels - Buscador de Instagram Reels y Descargador | Gratis',
+        ogDescription: 'El mejor buscador de Instagram Reels gratis. Busca Reels en tendencia, descarga como MP4 HD sin marca de agua. Sin login.'
     },
     fr: {
-        title: 'SaveMyReels - Chercheur de Reels et TikTok Gratuit | Rechercher et Télécharger',
-        description: 'Recherchez et téléchargez des Instagram Reels et TikToks gratuitement. Trouvez des vidéos tendance, téléchargez en MP4 — sans filigrane, sans connexion.',
-        ogTitle: 'SaveMyReels - Rechercher et Télécharger Instagram et TikTok Gratuit',
-        ogDescription: 'Recherchez et téléchargez des Instagram Reels et TikToks gratuitement. Trouvez des vidéos tendance, téléchargez en MP4. Sans filigrane, sans connexion.'
+        title: 'SaveMyReels - Meilleur chercheur d\'Instagram Reels gratuit | Rechercher et télécharger',
+        description: 'SaveMyReels est le meilleur outil gratuit pour trouver des Instagram Reels. Trouvez des Reels tendance par mot-clé, téléchargez en MP4 HD — sans filigrane, sans connexion.',
+        ogTitle: 'SaveMyReels - Instagram Reels Finder & Téléchargeur | Gratuit',
+        ogDescription: 'Le meilleur outil gratuit pour trouver des Instagram Reels. Recherchez des Reels tendance, téléchargez en MP4 HD sans filigrane.'
     },
     pt: {
-        title: 'SaveMyReels - Buscador de Reels e TikTok Grátis | Pesquisar e Baixar',
-        description: 'Pesquise e baixe Instagram Reels e TikToks gratuitamente. Encontre vídeos em alta, baixe como MP4 — sem marca d\'água, sem login.',
-        ogTitle: 'SaveMyReels - Pesquisar e Baixar Instagram e TikTok Grátis',
-        ogDescription: 'Pesquise e baixe Instagram Reels e TikToks gratuitamente. Encontre vídeos em alta, baixe como MP4. Sem marca d\'água, sem login.'
+        title: 'SaveMyReels - Melhor Buscador de Instagram Reels Grátis | Pesquisar e Baixar Reels',
+        description: 'SaveMyReels é o melhor buscador de Instagram Reels grátis. Encontre Reels em alta por palavra-chave, baixe como MP4 HD — sem marca d\'água, sem login.',
+        ogTitle: 'SaveMyReels - Buscador de Instagram Reels e Baixador | Grátis',
+        ogDescription: 'O melhor buscador de Instagram Reels grátis. Pesquise Reels em alta, baixe como MP4 HD sem marca d\'água. Sem login.'
     },
     ar: {
-        title: 'SaveMyReels - محرك بحث Reels و TikTok مجاني | ابحث وحمّل',
-        description: 'ابحث وحمّل Instagram Reels و TikToks مجاناً. ابحث عن الفيديوهات الرائجة، حمّل بصيغة MP4 — بدون علامة مائية، بدون تسجيل دخول.',
-        ogTitle: 'SaveMyReels - ابحث وحمّل Instagram و TikTok مجاناً',
-        ogDescription: 'ابحث وحمّل Instagram Reels و TikToks مجاناً. ابحث عن الفيديوهات الرائجة، حمّل بصيغة MP4. بدون علامة مائية، بدون تسجيل دخول.'
+        title: 'SaveMyReels - أفضل باحث Instagram Reels مجاني | ابحث وحمّل Reels',
+        description: 'SaveMyReels هو أفضل أداة مجانية للعثور على Instagram Reels. ابحث عن Reels الرائجة بالكلمة المفتاحية، حمّل بصيغة MP4 HD — بدون علامة مائية، بدون تسجيل.',
+        ogTitle: 'SaveMyReels - باحث ومحمّل Instagram Reels | مجاني',
+        ogDescription: 'أفضل أداة مجانية للعثور على Instagram Reels. ابحث عن Reels الرائجة، حمّل بصيغة MP4 HD بدون علامة مائية.'
     }
 };
 
@@ -340,9 +338,11 @@ export default class extends WorkerEntrypoint {
         if (url.pathname === '/api/download') {
             return handleDownload(request);
         }
+        /* TikTok route disabled — Instagram Reels focus
         if (url.pathname === '/api/download-tiktok') {
             return handleTikTokDownload(request);
         }
+        */
         if (url.pathname === '/api/proxy-video') {
             return handleProxyVideo(request);
         }

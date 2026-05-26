@@ -115,7 +115,7 @@
                 "name": "What is SaveMyReels?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "SaveMyReels is a free tool that helps you search and download Instagram Reels and TikTok videos. Search by keyword to find videos, then download them as MP4."
+                    "text": "SaveMyReels is a free Instagram Reels Finder and downloader. Search by keyword to find trending Instagram Reels, then download them as HD MP4 without watermarks."
                 }
             },
             {
@@ -123,7 +123,7 @@
                 "name": "How to download Instagram Reels?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Paste the Instagram Reel or TikTok URL into the download box on SaveMyReels and click Download. The video will be saved as an MP4 file to your device. No login or app installation required."
+                    "text": "Paste the Instagram Reel URL into the download box on SaveMyReels and click Download. The video will be saved as an HD MP4 file to your device. No login or app installation required."
                 }
             },
             {
@@ -131,7 +131,7 @@
                 "name": "Is SaveMyReels free to use?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes, SaveMyReels is completely free to use. No sign-up, subscription, or payment required for searching or downloading Instagram Reels and TikToks."
+                    "text": "Yes, SaveMyReels is completely free to use. No sign-up, subscription, or payment required for searching or downloading Instagram Reels."
                 }
             },
             {
@@ -139,7 +139,7 @@
                 "name": "How does SaveMyReels search work?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "SaveMyReels uses advanced search technology to find Instagram Reels and TikTok videos related to your query. Type any keyword and get instant results with autocomplete suggestions."
+                    "text": "SaveMyReels uses a specialized Reels Finder search engine to find Instagram Reels related to your query. Type any keyword and get instant results with autocomplete suggestions."
                 }
             },
             {
@@ -147,7 +147,7 @@
                 "name": "Can I download Reels without an Instagram account?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes, you can download public Instagram Reels and TikToks without having an account. Simply paste the video URL and download."
+                    "text": "Yes, you can download public Instagram Reels without having an Instagram account. Simply paste the Reel URL and download the video."
                 }
             },
             {
@@ -193,11 +193,12 @@
             <p class="hero-subtitle" data-i18n="hero_subtitle"></p>
         </section>
 
-        <!-- Platform Toggle -->
+        <!-- Platform Toggle (Temporarily Disabled) -->
+        <!--
         <div class="platform-toggle">
-            <button id="tab-instagram" class="platform-btn active">Instagram</button>
-            <button id="tab-tiktok" class="platform-btn">TikTok</button>
+            <button id="tab-instagram" class="platform-btn active">Instagram Reels</button>
         </div>
+        -->
 
         <!-- Google Custom Search Engine -->
         <section class="search-section">
@@ -229,7 +230,7 @@
                 <h1>Instagram Reels Finder</h1>
                 <p>SaveMyReels is the ultimate free Instagram Reels Finder. Search any topic and find the best trending Instagram Reels. Fast, free, and easy to use.</p>
                 <h2>Download Instagram Reels</h2>
-                <p>Found a reel you like? Use our downloader to save the video as MP4 without watermarks. TikTok download is also supported.</p>
+                <p>Found a Reel you like? Use our downloader to save the video as HD MP4 without watermarks. No login or app required.</p>
             </section>
         </noscript>
 
@@ -284,41 +285,17 @@
         history.replaceState(null, '', window.location.pathname + window.location.search);
     }
     
-    // Platform Toggle Logic
-    const urlParams = new URLSearchParams(window.location.search);
-    window.currentPlatform = urlParams.get('platform') === 'tiktok' ? 'tiktok' : 'instagram';
+    window.currentPlatform = 'instagram';
     
     // Inject correct CSE script
     const cseScript = document.createElement('script');
     cseScript.async = true;
-    if (window.currentPlatform === 'tiktok') {
-        cseScript.src = "https://cse.google.com/cse.js?cx=724dfb279e7194ea1";
-        document.getElementById('search-container').innerHTML = '<div class="gcse-search"></div>';
-    } else {
         cseScript.src = "https://cse.google.com/cse.js?cx=511550904bb1e4628";
         document.getElementById('search-container').innerHTML = '<div class="gcse-search"></div>';
-    }
     document.head.appendChild(cseScript);
-
-    // Update UI based on current platform
-    document.getElementById('tab-instagram').classList.toggle('active', window.currentPlatform === 'instagram');
-    document.getElementById('tab-tiktok').classList.toggle('active', window.currentPlatform === 'tiktok');
     
     const urlInput = document.getElementById('reel-url');
-    if (window.currentPlatform === 'instagram') {
         urlInput.placeholder = "https://www.instagram.com/reel/...";
-    } else {
-        urlInput.placeholder = "https://www.tiktok.com/@user/video/...";
-    }
-
-    document.getElementById('tab-instagram').addEventListener('click', () => setPlatform('instagram'));
-    document.getElementById('tab-tiktok').addEventListener('click', () => setPlatform('tiktok'));
-
-    function setPlatform(platform) {
-        if (platform !== window.currentPlatform) {
-            window.location.href = window.location.pathname + '?platform=' + platform;
-        }
-    }
     </script>
     <script>
     // Helper to get translation for current language
@@ -440,15 +417,18 @@
             if (!link) return;
             const reelUrl = link.getAttribute('data-ctorig');
             
-            // Check if it's Instagram or TikTok
+            // Check if it's an Instagram Reel
             const isInstagram = reelUrl && reelUrl.includes('instagram.com');
 
+            /* TikTok detection disabled — Instagram Reels focus
             const isTikTok = reelUrl && (
                 reelUrl.includes('tiktok.com') ||
                 reelUrl.includes('vt.tiktok.com')
             );
-
             const isDiscover = reelUrl && reelUrl.includes('tiktok.com/discover/');
+            */
+            const isTikTok = false;
+            const isDiscover = false;
 
             const btn = document.createElement(isDiscover ? 'a' : 'button');
             btn.className = 'reel-download-btn';
@@ -474,7 +454,7 @@
                         if (input.value.trim()) fromQuery = input.value.trim();
                     });
 
-                    const platform = isTikTok ? 'tiktok' : 'instagram';
+                    const platform = 'instagram';
                     downloadVideo(reelUrl, btn, fromQuery, platform);
                 });
             }
@@ -489,13 +469,13 @@
         btn.innerHTML = '⏳ ' + (getTranslation('download_btn_loading') || 'Loading...');
         btn.disabled = true;
         try {
-            const apiEndpoint = platform === 'tiktok' ? '/api/download-tiktok' : '/api/download';
+            const apiEndpoint = '/api/download';
             const response = await fetch(`${apiEndpoint}?url=` + encodeURIComponent(videoUrl));
             const data = await response.json();
             
             if (data.video_url) {
                 // Generate filename
-                let filename = platform === 'tiktok' ? 'tiktok' : 'reel';
+                let filename = 'reel';
                 if (data.caption) {
                     filename = data.caption
                         .substring(0, 60)

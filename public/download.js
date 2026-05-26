@@ -27,11 +27,8 @@ async function handleDownload() {
     
     const platform = window.currentPlatform || 'instagram';
 
-    if (platform === 'instagram' && !isValidInstagramUrl(url)) {
+    if (!isValidInstagramUrl(url)) {
         showError(getTranslation('error_invalid_url') || 'Please enter a valid Instagram Reel URL');
-        return;
-    } else if (platform === 'tiktok' && !isValidTikTokUrl(url)) {
-        showError(getTranslation('error_invalid_url_tiktok') || 'Please enter a valid TikTok Video URL');
         return;
     }
 
@@ -40,7 +37,7 @@ async function handleDownload() {
     downloadBtn.textContent = '...';
 
     try {
-        const apiEndpoint = platform === 'tiktok' ? '/api/download-tiktok' : '/api/download';
+        const apiEndpoint = '/api/download';
         const response = await fetch(`${apiEndpoint}?url=${encodeURIComponent(url)}`);
         const data = await response.json();
 
@@ -71,16 +68,13 @@ function isValidInstagramUrl(url) {
     return /instagram\.com\/(reel|reels|p)\/[\w-]+/i.test(url);
 }
 
-function isValidTikTokUrl(url) {
-    return /^https?:\/\/(www\.)?(tiktok\.com\/(@[\w.-]+\/video\/\d+|discover\/[\w-]+)|vt\.tiktok\.com\/[\w/-]+|vm\.tiktok\.com\/[\w/-]+)/i.test(url);
-}
 
 function showResult(data, originalUrl, platform) {
     hideAll();
     downloadResult.classList.remove('hidden');
     
     // Generate filename
-    let filename = platform === 'tiktok' ? 'tiktok' : 'reel';
+    let filename = 'reel';
     if (data.caption) {
         filename = data.caption
             .substring(0, 60)
