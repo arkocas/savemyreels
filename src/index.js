@@ -108,17 +108,33 @@ async function handleProxyVideo(request) {
     }
 }
 
+async function getGlobalStats(env) {
+    let stats = {
+        download_count: 0,
+        search_count: 0,
+        downloads_by_source: { direct: 0, search: 0 },
+        downloads_by_platform: { instagram: 0, tiktok: 0 },
+        searches_by_platform: { instagram: 0, tiktok: 0 },
+        recent_searches: [],
+        recent_downloads: [],
+        recent_search_downloads: []
+    };
+    try {
+        const raw = await env.STATS.get('global_stats');
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            stats = { ...stats, ...parsed };
+        }
+    } catch (_) {}
+    return stats;
+}
+
 async function handleTrackDownload(request, env) {
     if (request.method !== 'POST') {
         return Response.json({ error: 'Method not allowed' }, { status: 405 });
     }
 
     try {
-        // Toplam indirme sayısını artır
-        const current = parseInt(await env.STATS.get('download_count') || '0', 10);
-        await env.STATS.put('download_count', String(current + 1));
-
-        // Body'den source, query, url ve platform bilgisini al
         let source = 'direct';
         let query = '';
         let reelUrl = '';
@@ -131,37 +147,21 @@ async function handleTrackDownload(request, env) {
             reelUrl = (body.url || '').trim().substring(0, 300);
         } catch (_) {}
 
-        // Kaynağa göre sayaç tut
-        const sourceKey = `download_source:${source}`;
-        const sourceCount = parseInt(await env.STATS.get(sourceKey) || '0', 10);
-        await env.STATS.put(sourceKey, String(sourceCount + 1));
+        const stats = await getGlobalStats(env);
+        stats.download_count++;
+        stats.downloads_by_source[source] = (stats.downloads_by_source[source] || 0) + 1;
+        stats.downloads_by_platform[platform] = (stats.downloads_by_platform[platform] || 0) + 1;
 
-        // Platform bazlı indirme sayacı
-        const platformKey = `download_count:${platform}`;
-        const platformCount = parseInt(await env.STATS.get(platformKey) || '0', 10);
-        await env.STATS.put(platformKey, String(platformCount + 1));
+        stats.recent_downloads.unshift({ url: reelUrl, source, platform, query: query || undefined, time: Date.now() });
+        if (stats.recent_downloads.length > 50) stats.recent_downloads.length = 50; // Sınırı 50'ye düşürdük
 
-        // Tüm indirmeleri URL ile birlikte kaydet (son 100)
-        const allDownloadsRaw = await env.STATS.get('recent_downloads') || '[]';
-        const allDownloads = JSON.parse(allDownloadsRaw);
-        allDownloads.unshift({ url: reelUrl, source, platform, query: query || undefined, time: Date.now() });
-        if (allDownloads.length > 100) allDownloads.length = 100;
-        await env.STATS.put('recent_downloads', JSON.stringify(allDownloads));
-
-        // Arama sonucundan indirildiyse hangi sorgudan geldiğini de kaydet
         if (source === 'search' && query) {
-            const queryDownloadKey = `download_from_search:${query}`;
-            const queryDownloadCount = parseInt(await env.STATS.get(queryDownloadKey) || '0', 10);
-            await env.STATS.put(queryDownloadKey, String(queryDownloadCount + 1));
-
-            const recentRaw = await env.STATS.get('recent_search_downloads') || '[]';
-            const recent = JSON.parse(recentRaw);
-            recent.unshift({ url: reelUrl, query, platform, time: Date.now() });
-            if (recent.length > 50) recent.length = 50;
-            await env.STATS.put('recent_search_downloads', JSON.stringify(recent));
+            stats.recent_search_downloads.unshift({ url: reelUrl, query, platform, time: Date.now() });
+            if (stats.recent_search_downloads.length > 30) stats.recent_search_downloads.length = 30;
         }
 
-        return Response.json({ success: true, count: current + 1 });
+        await env.STATS.put('global_stats', JSON.stringify(stats));
+        return Response.json({ success: true, count: stats.download_count });
     } catch (err) {
         return Response.json({ error: 'Failed to track' }, { status: 500 });
     }
@@ -231,31 +231,14 @@ async function handleTrackSearch(request, env) {
             return Response.json({ error: 'Missing query' }, { status: 400 });
         }
 
-        // Toplam arama sayısını artır
-        const totalSearches = parseInt(await env.STATS.get('search_count') || '0', 10);
-        await env.STATS.put('search_count', String(totalSearches + 1));
+        const stats = await getGlobalStats(env);
+        stats.search_count++;
+        stats.searches_by_platform[platform] = (stats.searches_by_platform[platform] || 0) + 1;
 
-        // Platform bazlı arama sayacı
-        const platformKey = `search_count:${platform}`;
-        const platformCount = parseInt(await env.STATS.get(platformKey) || '0', 10);
-        await env.STATS.put(platformKey, String(platformCount + 1));
+        stats.recent_searches.unshift({ query, platform, time: Date.now() });
+        if (stats.recent_searches.length > 30) stats.recent_searches.length = 30; // Sınırı 30'a düşürdük
 
-        // Bu terimin sayısını artır
-        const termKey = `search_term:${query}`;
-        const termCount = parseInt(await env.STATS.get(termKey) || '0', 10);
-        await env.STATS.put(termKey, String(termCount + 1));
-
-        // Son aranan terimleri listede tut (son 50)
-        const recentRaw = await env.STATS.get('recent_searches') || '[]';
-        const recent = JSON.parse(recentRaw);
-        recent.unshift({
-            query,
-            platform,
-            time: Date.now()
-        });
-        if (recent.length > 50) recent.length = 50;
-        await env.STATS.put('recent_searches', JSON.stringify(recent));
-
+        await env.STATS.put('global_stats', JSON.stringify(stats));
         return Response.json({ success: true });
     } catch (err) {
         return Response.json({ error: 'Failed to track search' }, { status: 500 });
@@ -271,42 +254,22 @@ async function handleStats(request, env) {
     }
 
     try {
-        const downloadCount = parseInt(await env.STATS.get('download_count') || '0', 10);
-        const searchCount = parseInt(await env.STATS.get('search_count') || '0', 10);
-        const downloadDirect = parseInt(await env.STATS.get('download_source:direct') || '0', 10);
-        const downloadFromSearch = parseInt(await env.STATS.get('download_source:search') || '0', 10);
-
-        // Platform bazlı arama sayaçları
-        const igSearchCount = parseInt(await env.STATS.get('search_count:instagram') || '0', 10);
-        const ttSearchCount = parseInt(await env.STATS.get('search_count:tiktok') || '0', 10);
-
-        // Platform bazlı indirme sayaçları
-        const igDownloadCount = parseInt(await env.STATS.get('download_count:instagram') || '0', 10);
-        const ttDownloadCount = parseInt(await env.STATS.get('download_count:tiktok') || '0', 10);
-
-        const recentSearchesRaw = await env.STATS.get('recent_searches') || '[]';
-        const recentSearches = JSON.parse(recentSearchesRaw);
-
-        const recentDownloadsRaw = await env.STATS.get('recent_downloads') || '[]';
-        const recentDownloads = JSON.parse(recentDownloadsRaw);
-
-        const recentSearchDownloadsRaw = await env.STATS.get('recent_search_downloads') || '[]';
-        const recentSearchDownloads = JSON.parse(recentSearchDownloadsRaw);
+        const stats = await getGlobalStats(env);
 
         return Response.json({
-            download_count: downloadCount,
-            download_direct: downloadDirect,
-            download_from_search: downloadFromSearch,
-            search_count: searchCount,
+            download_count: stats.download_count,
+            download_direct: stats.downloads_by_source.direct || 0,
+            download_from_search: stats.downloads_by_source.search || 0,
+            search_count: stats.search_count,
 
-            instagram_search_count: igSearchCount,
-            tiktok_search_count: ttSearchCount,
-            instagram_download_count: igDownloadCount,
-            tiktok_download_count: ttDownloadCount,
+            instagram_search_count: stats.searches_by_platform.instagram || 0,
+            tiktok_search_count: stats.searches_by_platform.tiktok || 0,
+            instagram_download_count: stats.downloads_by_platform.instagram || 0,
+            tiktok_download_count: stats.downloads_by_platform.tiktok || 0,
 
-            recent_searches: recentSearches,
-            recent_downloads: recentDownloads,
-            recent_search_downloads: recentSearchDownloads
+            recent_searches: stats.recent_searches,
+            recent_downloads: stats.recent_downloads,
+            recent_search_downloads: stats.recent_search_downloads
         });
     } catch (err) {
         return Response.json({ error: 'Failed to get stats' }, { status: 500 });
