@@ -513,17 +513,28 @@ footer {
     display: none !important;
 }
 
-/* SEO article - visible to crawlers only, visually hidden */
+/* SEO article - discrete but visible for SEO compliance */
 .seo-article {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+    max-width: 800px;
+    margin: 4rem auto 2rem;
+    padding: 0 1.5rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    text-align: left;
+}
+.seo-article h2, .seo-article h3 {
+    color: #64748b;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.seo-article p {
+    margin-bottom: 1rem;
+}
+.seo-article ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 /* Responsive */

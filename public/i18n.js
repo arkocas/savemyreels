@@ -474,7 +474,9 @@ const translations = {
 };
 
 function detectLanguage() {
-    const lang = navigator.language || navigator.userLanguage || 'en';
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    const lang = urlLang || navigator.language || navigator.userLanguage || 'en';
     const primary = lang.split('-')[0].toLowerCase();
     const supported = ['en', 'tr', 'de', 'es', 'fr', 'pt', 'ar', 'hi'];
     return supported.includes(primary) ? primary : 'en';
