@@ -376,7 +376,10 @@
                     fetch('/api/track-search', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ query: query })
+                        body: JSON.stringify({
+                            query: query,
+                            platform: window.currentPlatform || 'instagram'
+                        })
                     }).catch(() => {});
                 }
             }
