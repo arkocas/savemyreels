@@ -25,8 +25,13 @@ async function handleDownload() {
     
     if (!url) return;
     
-    if (!isValidInstagramUrl(url)) {
-        showError('Please enter a valid Instagram Reel URL');
+    const platform = window.currentPlatform || 'instagram';
+
+    if (platform === 'instagram' && !isValidInstagramUrl(url)) {
+        showError(getTranslation('error_invalid_url') || 'Please enter a valid Instagram Reel URL');
+        return;
+    } else if (platform === 'tiktok' && !isValidTikTokUrl(url)) {
+        showError(getTranslation('error_invalid_url_tiktok') || 'Please enter a valid TikTok Video URL');
         return;
     }
 
@@ -35,15 +40,16 @@ async function handleDownload() {
     downloadBtn.textContent = '...';
 
     try {
-        const response = await fetch(`/api/download?url=${encodeURIComponent(url)}`);
+        const apiEndpoint = platform === 'tiktok' ? '/api/download-tiktok' : '/api/download';
+        const response = await fetch(`${apiEndpoint}?url=${encodeURIComponent(url)}`);
         const data = await response.json();
 
         if (data.error) {
             showError(data.error);
         } else if (data.video_url) {
-            showResult(data, url);
+            showResult(data, url, platform);
         } else {
-            showError('This post does not contain a video.');
+            showError(getTranslation('error_no_video') || 'This post does not contain a video.');
         }
     } catch (err) {
         console.error(err);
@@ -65,12 +71,16 @@ function isValidInstagramUrl(url) {
     return /instagram\.com\/(reel|reels|p)\/[\w-]+/i.test(url);
 }
 
-function showResult(data, originalUrl) {
+function isValidTikTokUrl(url) {
+    return /^https?:\/\/(www\.)?(tiktok\.com\/(@[\w.-]+\/video\/\d+|discover\/[\w-]+)|vt\.tiktok\.com\/[\w/-]+|vm\.tiktok\.com\/[\w/-]+)/i.test(url);
+}
+
+function showResult(data, originalUrl, platform) {
     hideAll();
     downloadResult.classList.remove('hidden');
     
-    // Generate filename from caption or username
-    let filename = 'reel';
+    // Generate filename
+    let filename = platform === 'tiktok' ? 'tiktok' : 'reel';
     if (data.caption) {
         filename = data.caption
             .substring(0, 60)
@@ -78,11 +88,11 @@ function showResult(data, originalUrl) {
             .replace(/\s+/g, '_')
             .trim();
     } else if (data.owner && data.owner.username) {
-        filename = data.owner.username + '_' + data.shortcode;
+        filename = data.owner.username + '_' + (data.shortcode || data.id || 'video');
     }
-    if (!filename) filename = 'reel_' + data.shortcode;
+    if (!filename) filename = `${platform}_` + (data.shortcode || data.id || Date.now());
 
-    const proxyUrl = `/api/proxy-video?url=${encodeURIComponent(data.video_url)}`;
+    const proxyUrl = `/api/proxy-video?url=${encodeURIComponent(data.video_url)}&filename=${encodeURIComponent(filename)}`;
 
     // Build DOM instead of innerHTML to avoid escaping issues
     downloadResult.innerHTML = `
@@ -101,7 +111,7 @@ function showResult(data, originalUrl) {
     downloadLink.className = 'download-link';
     downloadLink.download = filename + '.mp4';
     downloadLink.textContent = '⬇️ ' + (getTranslation('download_video') || 'Download Video');
-    downloadLink.addEventListener('click', () => trackDownload(originalUrl));
+    downloadLink.addEventListener('click', () => trackDownload(originalUrl, platform));
     downloadResult.appendChild(downloadLink);
 }
 
@@ -122,10 +132,10 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function trackDownload(reelUrl) {
+function trackDownload(videoUrl, platform) {
     fetch('/api/track-download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source: 'direct', url: reelUrl || '' })
+        body: JSON.stringify({ source: 'direct', url: videoUrl || '', platform: platform || 'instagram' })
     }).catch(() => {});
 }

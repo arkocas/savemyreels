@@ -176,6 +176,15 @@ body {
 }
 
 /* Results styling */
+body.gsc-overflow-hidden,
+html.gsc-overflow-hidden {
+    overflow-y: auto !important;
+}
+
+body {
+    overflow-y: auto !important;
+}
+
 .gsc-results-wrapper-overlay,
 .gsc-results-wrapper-visible {
     max-width: 800px;
@@ -321,7 +330,7 @@ body {
     background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
     border: none;
-    padding: 8px 14px;
+    padding: 6px 14px;
     border-radius: 50px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -620,3 +629,4 @@ footer {
     display: none; /* Mobilde bu reklamı gizle */
   }
 }
+

@@ -160,6 +160,56 @@ async function handleTrackDownload(request, env) {
     }
 }
 
+async function handleTikTokDownload(request) {
+    const url = new URL(request.url);
+    const tiktokUrl = url.searchParams.get('url');
+
+    if (!tiktokUrl) {
+        return Response.json({ error: 'Missing url parameter' }, { status: 400 });
+    }
+
+    try {
+        const response = await fetch('https://tikwm.com/api/?url=' + encodeURIComponent(tiktokUrl), {
+            headers: {
+                'User-Agent': IG_CONFIG.userAgent,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            return Response.json({ error: `TikTok API returned ${response.status}` }, { status: 502 });
+        }
+
+        const json = await response.json();
+
+        if (json.code !== 0 || !json.data) {
+            return Response.json({ error: json.msg || 'Could not fetch TikTok data' }, { status: 404 });
+        }
+
+        const item = json.data;
+
+        // Note: TikWM play urls are often directly accessible or need proxy.
+        // They sometimes redirect or return 403 if accessed directly from browser without proper headers.
+        // Our proxy-video endpoint should handle it.
+
+        return Response.json({
+            id: item.id,
+            is_video: true,
+            video_url: item.play || null,
+            thumbnail: item.cover,
+            caption: item.title || '',
+            owner: {
+                username: item.author?.unique_id,
+                full_name: item.author?.nickname,
+            },
+            video_duration: item.duration,
+            view_count: item.play_count,
+        });
+    } catch (err) {
+        return Response.json({ error: 'Failed to fetch TikTok data' }, { status: 500 });
+    }
+}
+
 async function handleTrackSearch(request, env) {
     if (request.method !== 'POST') {
         return Response.json({ error: 'Method not allowed' }, { status: 405 });
@@ -235,46 +285,46 @@ async function handleStats(request, env) {
 // SEO meta translations
 const seoTranslations = {
     en: {
-        title: 'SaveMyReels - Free Reels Finder | Search & Download Instagram Reels',
-        description: 'Search and download Instagram Reels for free. Find trending reels by keyword, download videos as MP4 — no watermark, no login required.',
-        ogTitle: 'SaveMyReels - Search & Download Instagram Reels Free',
-        ogDescription: 'Search and download Instagram Reels for free. Find trending reels by keyword, download videos in MP4. No watermark, no login required.'
+        title: 'SaveMyReels - Free Reels & TikTok Finder | Search & Download',
+        description: 'Search and download Instagram Reels and TikToks for free. Find trending videos by keyword, download videos as MP4 — no watermark, no login required.',
+        ogTitle: 'SaveMyReels - Search & Download Instagram & TikTok Free',
+        ogDescription: 'Search and download Instagram Reels and TikToks for free. Find trending videos by keyword, download in MP4. No watermark, no login required.'
     },
     tr: {
-        title: 'SaveMyReels - Ücretsiz Reels Bulucu | Instagram Reels Ara & İndir',
-        description: 'Instagram Reels\'leri ücretsiz arayın ve indirin. Anahtar kelimeyle trend reels bulun, MP4 olarak kaydedin — filigran yok, giriş gerekmez.',
-        ogTitle: 'SaveMyReels - Instagram Reels Ara & İndir Ücretsiz',
-        ogDescription: 'Instagram Reels\'leri ücretsiz arayın ve indirin. Trend reels bulun, MP4 olarak kaydedin. Filigran yok, giriş gerekmez.'
+        title: 'SaveMyReels - Ücretsiz Reels & TikTok Bulucu | Ara & İndir',
+        description: 'Instagram Reels ve TikTok videolarını ücretsiz arayın ve indirin. Anahtar kelimeyle trend videolar bulun, MP4 olarak kaydedin — filigran yok, giriş gerekmez.',
+        ogTitle: 'SaveMyReels - Instagram & TikTok Ara & İndir Ücretsiz',
+        ogDescription: 'Instagram Reels ve TikTok videolarını ücretsiz arayın ve indirin. Trend videolar bulun, MP4 olarak kaydedin. Filigran yok, giriş gerekmez.'
     },
     de: {
-        title: 'SaveMyReels - Kostenloser Reels Finder | Instagram Reels Suchen & Herunterladen',
-        description: 'Instagram Reels kostenlos suchen und herunterladen. Reels nach Stichwort finden, als MP4 speichern — kein Wasserzeichen, kein Login.',
-        ogTitle: 'SaveMyReels - Instagram Reels Suchen & Herunterladen Kostenlos',
-        ogDescription: 'Instagram Reels kostenlos suchen und herunterladen. Reels nach Stichwort finden, als MP4 speichern. Kein Wasserzeichen, kein Login.'
+        title: 'SaveMyReels - Kostenloser Reels & TikTok Finder | Suchen & Herunterladen',
+        description: 'Instagram Reels und TikToks kostenlos suchen und herunterladen. Videos nach Stichwort finden, als MP4 speichern — kein Wasserzeichen, kein Login.',
+        ogTitle: 'SaveMyReels - Instagram & TikTok Suchen & Herunterladen Kostenlos',
+        ogDescription: 'Instagram Reels und TikToks kostenlos suchen und herunterladen. Videos nach Stichwort finden, als MP4 speichern. Kein Wasserzeichen, kein Login.'
     },
     es: {
-        title: 'SaveMyReels - Buscador de Reels Gratis | Buscar y Descargar Instagram Reels',
-        description: 'Busca y descarga Instagram Reels gratis. Encuentra reels en tendencia, descarga como MP4 — sin marca de agua, sin login.',
-        ogTitle: 'SaveMyReels - Buscar y Descargar Instagram Reels Gratis',
-        ogDescription: 'Busca y descarga Instagram Reels gratis. Encuentra reels en tendencia, descarga como MP4. Sin marca de agua, sin login.'
+        title: 'SaveMyReels - Buscador de Reels y TikTok Gratis | Buscar y Descargar',
+        description: 'Busca y descarga Instagram Reels y TikToks gratis. Encuentra videos en tendencia, descarga como MP4 — sin marca de agua, sin login.',
+        ogTitle: 'SaveMyReels - Buscar y Descargar Instagram y TikTok Gratis',
+        ogDescription: 'Busca y descarga Instagram Reels y TikToks gratis. Encuentra videos en tendencia, descarga como MP4. Sin marca de agua, sin login.'
     },
     fr: {
-        title: 'SaveMyReels - Chercheur de Reels Gratuit | Rechercher et Télécharger Instagram Reels',
-        description: 'Recherchez et téléchargez des Instagram Reels gratuitement. Trouvez des reels tendance, téléchargez en MP4 — sans filigrane, sans connexion.',
-        ogTitle: 'SaveMyReels - Rechercher et Télécharger Instagram Reels Gratuit',
-        ogDescription: 'Recherchez et téléchargez des Instagram Reels gratuitement. Trouvez des reels tendance, téléchargez en MP4. Sans filigrane, sans connexion.'
+        title: 'SaveMyReels - Chercheur de Reels et TikTok Gratuit | Rechercher et Télécharger',
+        description: 'Recherchez et téléchargez des Instagram Reels et TikToks gratuitement. Trouvez des vidéos tendance, téléchargez en MP4 — sans filigrane, sans connexion.',
+        ogTitle: 'SaveMyReels - Rechercher et Télécharger Instagram et TikTok Gratuit',
+        ogDescription: 'Recherchez et téléchargez des Instagram Reels et TikToks gratuitement. Trouvez des vidéos tendance, téléchargez en MP4. Sans filigrane, sans connexion.'
     },
     pt: {
-        title: 'SaveMyReels - Buscador de Reels Grátis | Pesquisar e Baixar Instagram Reels',
-        description: 'Pesquise e baixe Instagram Reels gratuitamente. Encontre reels em alta, baixe como MP4 — sem marca d\'água, sem login.',
-        ogTitle: 'SaveMyReels - Pesquisar e Baixar Instagram Reels Grátis',
-        ogDescription: 'Pesquise e baixe Instagram Reels gratuitamente. Encontre reels em alta, baixe como MP4. Sem marca d\'água, sem login.'
+        title: 'SaveMyReels - Buscador de Reels e TikTok Grátis | Pesquisar e Baixar',
+        description: 'Pesquise e baixe Instagram Reels e TikToks gratuitamente. Encontre vídeos em alta, baixe como MP4 — sem marca d\'água, sem login.',
+        ogTitle: 'SaveMyReels - Pesquisar e Baixar Instagram e TikTok Grátis',
+        ogDescription: 'Pesquise e baixe Instagram Reels e TikToks gratuitamente. Encontre vídeos em alta, baixe como MP4. Sem marca d\'água, sem login.'
     },
     ar: {
-        title: 'SaveMyReels - محرك بحث Reels مجاني | ابحث وحمّل Instagram Reels',
-        description: 'ابحث وحمّل Instagram Reels مجاناً. ابحث عن الريلز الرائجة، حمّل بصيغة MP4 — بدون علامة مائية، بدون تسجيل دخول.',
-        ogTitle: 'SaveMyReels - ابحث وحمّل Instagram Reels مجاناً',
-        ogDescription: 'ابحث وحمّل Instagram Reels مجاناً. ابحث عن الريلز الرائجة، حمّل بصيغة MP4. بدون علامة مائية، بدون تسجيل دخول.'
+        title: 'SaveMyReels - محرك بحث Reels و TikTok مجاني | ابحث وحمّل',
+        description: 'ابحث وحمّل Instagram Reels و TikToks مجاناً. ابحث عن الفيديوهات الرائجة، حمّل بصيغة MP4 — بدون علامة مائية، بدون تسجيل دخول.',
+        ogTitle: 'SaveMyReels - ابحث وحمّل Instagram و TikTok مجاناً',
+        ogDescription: 'ابحث وحمّل Instagram Reels و TikToks مجاناً. ابحث عن الفيديوهات الرائجة، حمّل بصيغة MP4. بدون علامة مائية، بدون تسجيل دخول.'
     }
 };
 
@@ -295,6 +345,9 @@ export default class extends WorkerEntrypoint {
 
         if (url.pathname === '/api/download') {
             return handleDownload(request);
+        }
+        if (url.pathname === '/api/download-tiktok') {
+            return handleTikTokDownload(request);
         }
         if (url.pathname === '/api/proxy-video') {
             return handleProxyVideo(request);

@@ -1,7 +1,7 @@
 {
   "name": "savemyreels",
   "main": "src/index.js",
-  "compatibility_date": "2026-05-17",
+  "compatibility_date": "2026-05-03",
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
