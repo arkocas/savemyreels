@@ -47,7 +47,6 @@ const translations = {
         footer_rights: "All rights reserved.",
         footer_disclaimer: "SaveMyReels is not affiliated with Instagram or Meta. Instagram is a trademark of Meta Platforms, Inc.",
         error_invalid_url: "Please enter a valid Instagram Reel URL",
-        error_invalid_url_tiktok: "Please enter a valid video URL",
         error_no_video: "This post does not contain a video."
     },
     tr: {
@@ -98,7 +97,6 @@ const translations = {
         footer_rights: "Tüm hakları saklıdır.",
         footer_disclaimer: "SaveMyReels, Instagram veya Meta ile bağlantılı değildir. Instagram, Meta Platforms, Inc. şirketinin ticari markasıdır.",
         error_invalid_url: "Lütfen geçerli bir Instagram Reel URL'si girin",
-        error_invalid_url_tiktok: "Lütfen geçerli bir video URL'si girin",
         error_no_video: "Bu gönderi bir video içermiyor."
     },
     de: {
@@ -149,7 +147,6 @@ const translations = {
         footer_rights: "Alle Rechte vorbehalten.",
         footer_disclaimer: "SaveMyReels ist nicht mit Instagram oder Meta verbunden. Instagram ist eine Marke von Meta Platforms, Inc.",
         error_invalid_url: "Bitte geben Sie eine gültige Instagram Reel URL ein",
-        error_invalid_url_tiktok: "Bitte geben Sie eine gültige Video-URL ein",
         error_no_video: "Dieser Beitrag enthält kein Video."
     },
     es: {
@@ -200,7 +197,6 @@ const translations = {
         footer_rights: "Todos los derechos reservados.",
         footer_disclaimer: "SaveMyReels no está afiliado a Instagram ni Meta. Instagram es una marca de Meta Platforms, Inc.",
         error_invalid_url: "Por favor introduce una URL válida de Instagram Reel",
-        error_invalid_url_tiktok: "Por favor introduce una URL de video válida",
         error_no_video: "Esta publicación no contiene un video."
     },
     fr: {
@@ -251,7 +247,6 @@ const translations = {
         footer_rights: "Tous droits réservés.",
         footer_disclaimer: "SaveMyReels n'est pas affilié à Instagram ou Meta. Instagram est une marque de Meta Platforms, Inc.",
         error_invalid_url: "Veuillez entrer une URL Instagram Reel valide",
-        error_invalid_url_tiktok: "Veuillez entrer une URL de vidéo valide",
         error_no_video: "Cette publication ne contient pas de vidéo."
     },
     pt: {
@@ -302,7 +297,6 @@ const translations = {
         footer_rights: "Todos os direitos reservados.",
         footer_disclaimer: "SaveMyReels não é afiliado ao Instagram ou Meta. Instagram é uma marca da Meta Platforms, Inc.",
         error_invalid_url: "Por favor insira uma URL válida de Instagram Reel",
-        error_invalid_url_tiktok: "Por favor insira uma URL de vídeo válida",
         error_no_video: "Esta publicação não contém um vídeo."
     },
     ar: {
@@ -353,7 +347,6 @@ const translations = {
         footer_rights: "جميع الحقوق محفوظة.",
         footer_disclaimer: "SaveMyReels غير تابع لـ Instagram أو Meta. Instagram هي علامة تجارية لشركة Meta Platforms, Inc.",
         error_invalid_url: "الرجاء إدخال رابط Instagram Reel صحيح",
-        error_invalid_url_tiktok: "الرجاء إدخال رابط فيديو صحيح",
         error_no_video: "هذا المنشور لا يحتوي على فيديو."
     },
     hi: {
@@ -404,7 +397,6 @@ const translations = {
         footer_rights: "सर्वाधिकार सुरक्षित।",
         footer_disclaimer: "SaveMyReels Instagram या Meta से संबद्ध नहीं है। Instagram, Meta Platforms, Inc. का ट्रेडमार्क है।",
         error_invalid_url: "कृपया एक वैध Instagram Reel URL दर्ज करें",
-        error_invalid_url_tiktok: "कृपया एक वैध वीडियो URL दर्ज करें",
         error_no_video: "इस पोस्ट में कोई वीडियो नहीं है。"
     }
 };

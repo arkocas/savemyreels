@@ -113,8 +113,8 @@ async function getGlobalStats(env) {
         download_count: 0,
         search_count: 0,
         downloads_by_source: { direct: 0, search: 0 },
-        downloads_by_platform: { instagram: 0, tiktok: 0 },
-        searches_by_platform: { instagram: 0, tiktok: 0 },
+        downloads_by_platform: { instagram: 0 },
+        searches_by_platform: { instagram: 0 },
         recent_searches: [],
         recent_downloads: [],
         recent_search_downloads: []
@@ -167,53 +167,7 @@ async function handleTrackDownload(request, env) {
     }
 }
 
-/* TikTok download handler — disabled for Instagram Reels focus
-async function handleTikTokDownload(request) {
-    const url = new URL(request.url);
-    const tiktokUrl = url.searchParams.get('url');
 
-    if (!tiktokUrl) {
-        return Response.json({ error: 'Missing url parameter' }, { status: 400 });
-    }
-
-    try {
-        const response = await fetch('https://tikwm.com/api/?url=' + encodeURIComponent(tiktokUrl), {
-            headers: {
-                'User-Agent': IG_CONFIG.userAgent,
-                'Accept': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            return Response.json({ error: `TikTok API returned ${response.status}` }, { status: 502 });
-        }
-
-        const json = await response.json();
-
-        if (json.code !== 0 || !json.data) {
-            return Response.json({ error: json.msg || 'Could not fetch TikTok data' }, { status: 404 });
-        }
-
-        const item = json.data;
-
-        return Response.json({
-            id: item.id,
-            is_video: true,
-            video_url: item.play || null,
-            thumbnail: item.cover,
-            caption: item.title || '',
-            owner: {
-                username: item.author?.unique_id,
-                full_name: item.author?.nickname,
-            },
-            video_duration: item.duration,
-            view_count: item.play_count,
-        });
-    } catch (err) {
-        return Response.json({ error: 'Failed to fetch TikTok data' }, { status: 500 });
-    }
-}
-*/
 
 async function handleTrackSearch(request, env) {
     if (request.method !== 'POST') {
@@ -261,9 +215,7 @@ async function handleStats(request, env) {
             search_count: stats.search_count,
 
             instagram_search_count: stats.searches_by_platform.instagram || 0,
-            tiktok_search_count: stats.searches_by_platform.tiktok || 0,
             instagram_download_count: stats.downloads_by_platform.instagram || 0,
-            tiktok_download_count: stats.downloads_by_platform.tiktok || 0,
 
             recent_searches: stats.recent_searches,
             recent_downloads: stats.recent_downloads,
@@ -338,11 +290,7 @@ export default class extends WorkerEntrypoint {
         if (url.pathname === '/api/download') {
             return handleDownload(request);
         }
-        /* TikTok route disabled — Instagram Reels focus
-        if (url.pathname === '/api/download-tiktok') {
-            return handleTikTokDownload(request);
-        }
-        */
+
         if (url.pathname === '/api/proxy-video') {
             return handleProxyVideo(request);
         }

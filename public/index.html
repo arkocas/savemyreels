@@ -420,36 +420,16 @@
             // Check if it's an Instagram Reel
             const isInstagram = reelUrl && reelUrl.includes('instagram.com');
 
-            /* TikTok detection disabled — Instagram Reels focus
-            const isTikTok = reelUrl && (
-                reelUrl.includes('tiktok.com') ||
-                reelUrl.includes('vt.tiktok.com')
-            );
-            const isDiscover = reelUrl && reelUrl.includes('tiktok.com/discover/');
-            */
-            const isTikTok = false;
-            const isDiscover = false;
-
-            const btn = document.createElement(isDiscover ? 'a' : 'button');
+            const btn = document.createElement('button');
             btn.className = 'reel-download-btn';
-            
-            if (isDiscover) {
-                btn.classList.add('discover-btn');
-                btn.innerHTML = '🔎 Keşfet';
+            btn.innerHTML = '⬇ ' + (getTranslation('download_btn') || 'Download');
 
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.open(reelUrl, '_blank', 'noopener,noreferrer');
-                });
-            } else {
-                btn.innerHTML = '⬇ ' + (getTranslation('download_btn') || 'Download');
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    const searchInputs = document.querySelectorAll('input.gsc-input');
-                    let fromQuery = '';
+                const searchInputs = document.querySelectorAll('input.gsc-input');
+                let fromQuery = '';
                     searchInputs.forEach(input => {
                         if (input.value.trim()) fromQuery = input.value.trim();
                     });
@@ -457,7 +437,6 @@
                     const platform = 'instagram';
                     downloadVideo(reelUrl, btn, fromQuery, platform);
                 });
-            }
             result.style.position = 'relative';
             result.appendChild(btn);
         });
