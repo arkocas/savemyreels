@@ -29,159 +29,8 @@ function getShortcode(igUrl) {
     return match && match[2] ? match[2] : null;
 }
 
-// Normalize response from different API formats into a unified shape
-function normalizeResponse(data, shortcode) {
-    // Format 1: GraphQL web response (xdt_shortcode_media)
-    if (data?.data?.xdt_shortcode_media) {
-        const item = data.data.xdt_shortcode_media;
-        return {
-            shortcode: item.shortcode || shortcode,
-            is_video: item.is_video,
-            video_url: item.video_url || null,
-            thumbnail: item.display_url || item.thumbnail_src,
-            caption: item.edge_media_to_caption?.edges?.[0]?.node?.text || '',
-            owner: {
-                username: item.owner?.username,
-                full_name: item.owner?.full_name,
-            },
-            video_duration: item.video_duration,
-            view_count: item.video_view_count || item.video_play_count,
-        };
-    }
-
-    // Format 2: Mobile API response (items array)
-    if (data?.items?.[0]) {
-        const item = data.items[0];
-        const videoVersions = item.video_versions;
-        const videoUrl = videoVersions?.[0]?.url || null;
-        const caption = item.caption?.text || '';
-        return {
-            shortcode: shortcode,
-            is_video: item.media_type === 2 || !!videoUrl,
-            video_url: videoUrl,
-            thumbnail: item.image_versions2?.candidates?.[0]?.url || '',
-            caption: caption,
-            owner: {
-                username: item.user?.username,
-                full_name: item.user?.full_name,
-            },
-            video_duration: item.video_duration,
-            view_count: item.view_count || item.play_count,
-        };
-    }
-
-    // Format 3: GraphQL xdt_api response
-    if (data?.data?.xdt_api__v1__media__shortcode__web_info?.items?.[0]) {
-        const item = data.data.xdt_api__v1__media__shortcode__web_info.items[0];
-        const videoVersions = item.video_versions;
-        const videoUrl = videoVersions?.[0]?.url || null;
-        return {
-            shortcode: shortcode,
-            is_video: item.media_type === 2 || !!videoUrl,
-            video_url: videoUrl,
-            thumbnail: item.image_versions2?.candidates?.[0]?.url || '',
-            caption: item.caption?.text || '',
-            owner: {
-                username: item.user?.username,
-                full_name: item.user?.full_name,
-            },
-            video_duration: item.video_duration,
-            view_count: item.view_count || item.play_count,
-        };
-    }
-
-    return null;
-}
-
-// Method 1: Mobile API (most stable — used by yt-dlp)
-async function tryMobileApi(shortcode) {
-    const pk = shortcodeToPk(shortcode);
-    const response = await fetch(`https://i.instagram.com/api/v1/media/${pk}/info/`, {
-        headers: {
-            'User-Agent': IG_CONFIG.mobileUserAgent,
-            'X-IG-App-ID': IG_CONFIG.xIgAppId,
-            'Accept': '*/*',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'X-ASBD-ID': '359341',
-            'X-IG-WWW-Claim': '0',
-            'Origin': 'https://www.instagram.com',
-        }
-    });
-    if (!response.ok) return null;
-    return await response.json();
-}
-
-// Method 2: Web GraphQL API (tries multiple doc_ids)
-async function tryGraphqlApi(shortcode) {
-    for (const docId of IG_CONFIG.docIds) {
-        try {
-            const body = new URLSearchParams({
-                variables: JSON.stringify({ shortcode }),
-                doc_id: docId,
-                lsd: 'AVqbxe3J_YA'
-            });
-
-            const response = await fetch('https://www.instagram.com/api/graphql', {
-                method: 'POST',
-                headers: {
-                    'User-Agent': IG_CONFIG.userAgent,
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-IG-App-ID': IG_CONFIG.xIgAppId,
-                    'X-FB-LSD': 'AVqbxe3J_YA',
-                    'X-ASBD-ID': '359341',
-                    'Sec-Fetch-Site': 'same-origin',
-                    'Origin': 'https://www.instagram.com',
-                    'Referer': 'https://www.instagram.com/',
-                },
-                body: body.toString()
-            });
-
-            if (!response.ok) continue;
-            const json = await response.json();
-            if (json?.data?.xdt_shortcode_media || json?.data?.xdt_api__v1__media__shortcode__web_info) {
-                return json;
-            }
-        } catch (_) {
-            // Try next doc_id
-        }
-    }
-    return null;
-}
-
-// Method 3: Scrape the web page for embedded JSON data
-async function tryPageScrape(shortcode) {
-    try {
-        const response = await fetch(`https://www.instagram.com/p/${shortcode}/`, {
-            headers: {
-                'User-Agent': IG_CONFIG.userAgent,
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'none',
-            }
-        });
-        if (!response.ok) return null;
-        const html = await response.text();
-
-        // Try to extract video_url from embedded JSON in the page
-        const videoUrlMatch = html.match(/"video_url"\s*:\s*"(https?:[^"]+)"/);
-        if (videoUrlMatch) {
-            const videoUrl = videoUrlMatch[1].replace(/\\u0026/g, '&').replace(/\\\//g, '/');
-            // Try to extract more data
-            const captionMatch = html.match(/"text"\s*:\s*"([^"]{0,500})"/);
-            const usernameMatch = html.match(/"username"\s*:\s*"([^"]+)"/);
-            return {
-                items: [{
-                    video_versions: [{ url: videoUrl }],
-                    media_type: 2,
-                    caption: captionMatch ? { text: captionMatch[1] } : null,
-                    user: usernameMatch ? { username: usernameMatch[1] } : null,
-                }]
-            };
-        }
-    } catch (_) {}
-    return null;
-}
+const RAPIDAPI_KEY = 'c6cd14f92dmsh16112b10fa98fd0p1abd7djsn171f0b399b09';
+const RAPIDAPI_HOST = 'instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com';
 
 async function handleDownload(request) {
     const url = new URL(request.url);
@@ -196,28 +45,57 @@ async function handleDownload(request) {
         return Response.json({ error: 'Invalid Instagram URL' }, { status: 400 });
     }
 
-    // Try multiple methods with fallback
-    const methods = [
-        { name: 'mobile_api', fn: () => tryMobileApi(shortcode) },
-        { name: 'graphql_api', fn: () => tryGraphqlApi(shortcode) },
-        { name: 'page_scrape', fn: () => tryPageScrape(shortcode) },
-    ];
-
-    for (const method of methods) {
-        try {
-            const rawData = await method.fn();
-            if (!rawData) continue;
-
-            const result = normalizeResponse(rawData, shortcode);
-            if (result && result.video_url) {
-                return Response.json(result);
+    try {
+        const rapidApiUrl = `https://${RAPIDAPI_HOST}/convert?url=${encodeURIComponent(igUrl)}`;
+        const response = await fetch(rapidApiUrl, {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-host': RAPIDAPI_HOST,
+                'x-rapidapi-key': RAPIDAPI_KEY,
+                'Content-Type': 'application/json'
             }
-        } catch (_) {
-            // Try next method
-        }
-    }
+        });
 
-    return Response.json({ error: 'Could not fetch video. Instagram may have blocked the request.' }, { status: 502 });
+        if (!response.ok) {
+            return Response.json({ error: `RapidAPI returned ${response.status}` }, { status: 502 });
+        }
+
+        const data = await response.json();
+        
+        if (data.error) {
+             return Response.json({ error: data.error }, { status: 404 });
+        }
+
+        if (!data.media || data.media.length === 0) {
+            return Response.json({ error: 'No media found in the post.' }, { status: 404 });
+        }
+
+        // Find the first video in the media array
+        let videoItem = data.media.find(m => m.type === 'video');
+        
+        // If no video found, but there is media, it might be a photo post
+        if (!videoItem) {
+             return Response.json({ error: 'This post does not contain a video.' }, { status: 404 });
+        }
+
+        // Return formatted response expected by the frontend
+        return Response.json({
+            shortcode: shortcode,
+            is_video: true,
+            video_url: videoItem.url,
+            thumbnail: videoItem.thumbnail || '',
+            caption: '', // API doesn't provide caption
+            owner: {
+                username: 'instagram_user', 
+                full_name: 'Instagram User'
+            },
+            video_duration: null,
+            view_count: null,
+        });
+
+    } catch (err) {
+        return Response.json({ error: 'Failed to connect to download API.' }, { status: 500 });
+    }
 }
 
 async function handleProxyVideo(request) {
