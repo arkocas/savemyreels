@@ -32,6 +32,66 @@ function getShortcode(igUrl) {
 const RAPIDAPI_KEY = 'c6cd14f92dmsh16112b10fa98fd0p1abd7djsn171f0b399b09';
 const RAPIDAPI_HOST = 'instagram-downloader-download-instagram-stories-videos4.p.rapidapi.com';
 
+// Method 1: Downloadgram public API (free, no key needed)
+async function tryDownloadgram(igUrl) {
+    const response = await fetch('https://api.downloadgram.org/media', {
+        method: 'POST',
+        headers: {
+            'User-Agent': IG_CONFIG.userAgent,
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Origin': 'https://downloadgram.org',
+            'Referer': 'https://downloadgram.org/',
+        },
+        body: `url=${encodeURIComponent(igUrl)}`
+    });
+
+    if (!response.ok) return null;
+
+    const html = await response.text();
+
+    // The API returns JS/HTML with cdn.downloadgram.org links containing JWT tokens
+    // Extract video download link (the one with force:true in JWT is the video)
+    // Links look like: https://cdn.downloadgram.org/?token=eyJ...
+    const links = [];
+    const linkRegex = /https:\/\/cdn\.downloadgram\.org\/\?token=[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+/g;
+    let match;
+    while ((match = linkRegex.exec(html)) !== null) {
+        links.push(match[0]);
+    }
+
+    if (links.length === 0) return null;
+
+    // The last CDN link is typically the video (force:true in JWT), first is thumbnail
+    // For a reel, there are usually 2 links: thumbnail (image) and video
+    const videoUrl = links.length > 1 ? links[links.length - 1] : links[0];
+    const thumbnail = links.length > 1 ? links[0] : '';
+
+    return { videoUrl, thumbnail };
+}
+
+// Method 2: RapidAPI fallback
+async function tryRapidApi(igUrl) {
+    const rapidApiUrl = `https://${RAPIDAPI_HOST}/convert?url=${encodeURIComponent(igUrl)}`;
+    const response = await fetch(rapidApiUrl, {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-host': RAPIDAPI_HOST,
+            'x-rapidapi-key': RAPIDAPI_KEY,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (data.error || !data.media || data.media.length === 0) return null;
+
+    const videoItem = data.media.find(m => m.type === 'video');
+    if (!videoItem) return null;
+
+    return { videoUrl: videoItem.url, thumbnail: videoItem.thumbnail || '' };
+}
+
 async function handleDownload(request) {
     const url = new URL(request.url);
     const igUrl = url.searchParams.get('url');
@@ -45,57 +105,33 @@ async function handleDownload(request) {
         return Response.json({ error: 'Invalid Instagram URL' }, { status: 400 });
     }
 
-    try {
-        const rapidApiUrl = `https://${RAPIDAPI_HOST}/convert?url=${encodeURIComponent(igUrl)}`;
-        const response = await fetch(rapidApiUrl, {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-host': RAPIDAPI_HOST,
-                'x-rapidapi-key': RAPIDAPI_KEY,
-                'Content-Type': 'application/json'
+    // Try Downloadgram first (free, no key), then RapidAPI as fallback
+    const methods = [
+        { name: 'downloadgram', fn: () => tryDownloadgram(igUrl) },
+        { name: 'rapidapi', fn: () => tryRapidApi(igUrl) },
+    ];
+
+    for (const method of methods) {
+        try {
+            const result = await method.fn();
+            if (result && result.videoUrl) {
+                return Response.json({
+                    shortcode: shortcode,
+                    is_video: true,
+                    video_url: result.videoUrl,
+                    thumbnail: result.thumbnail || '',
+                    caption: '',
+                    owner: { username: '', full_name: '' },
+                    video_duration: null,
+                    view_count: null,
+                });
             }
-        });
-
-        if (!response.ok) {
-            return Response.json({ error: `RapidAPI returned ${response.status}` }, { status: 502 });
+        } catch (_) {
+            // Try next method
         }
-
-        const data = await response.json();
-        
-        if (data.error) {
-             return Response.json({ error: data.error }, { status: 404 });
-        }
-
-        if (!data.media || data.media.length === 0) {
-            return Response.json({ error: 'No media found in the post.' }, { status: 404 });
-        }
-
-        // Find the first video in the media array
-        let videoItem = data.media.find(m => m.type === 'video');
-        
-        // If no video found, but there is media, it might be a photo post
-        if (!videoItem) {
-             return Response.json({ error: 'This post does not contain a video.' }, { status: 404 });
-        }
-
-        // Return formatted response expected by the frontend
-        return Response.json({
-            shortcode: shortcode,
-            is_video: true,
-            video_url: videoItem.url,
-            thumbnail: videoItem.thumbnail || '',
-            caption: '', // API doesn't provide caption
-            owner: {
-                username: 'instagram_user', 
-                full_name: 'Instagram User'
-            },
-            video_duration: null,
-            view_count: null,
-        });
-
-    } catch (err) {
-        return Response.json({ error: 'Failed to connect to download API.' }, { status: 500 });
     }
+
+    return Response.json({ error: 'Could not fetch video. Please try again later.' }, { status: 502 });
 }
 
 async function handleProxyVideo(request) {
